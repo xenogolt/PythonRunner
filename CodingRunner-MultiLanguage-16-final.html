@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code Runner — Learn. Build. Run. Practice.</title>
+<meta name="description" content="Code Runner is a student-first browser coding workspace for eight languages, practice, debugging and cloud saves.">
+<style>
+:root{
+  --bg:#060816;--panel:#0b1020;--panel2:#10172a;--line:#1d2940;
+  --text:#f7f9ff;--muted:#8b98b1;--accent:#7c6cff;--cyan:#42d8ff;
+  --green:#31d6a0;--red:#ff6b85;--yellow:#ffd166;--shadow:0 25px 80px rgba(0,0,0,.42)
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.hidden{display:none!important}
+#landing{min-height:100vh;background:
+ radial-gradient(700px 500px at 10% 10%,rgba(124,108,255,.18),transparent 60%),
+ radial-gradient(650px 500px at 90% 25%,rgba(66,216,255,.10),transparent 60%)}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between;max-width:1180px;margin:auto;padding:0 22px;border-bottom:1px solid rgba(255,255,255,.06)}
+.logo{display:flex;align-items:center;gap:11px;font-weight:800}.logoMark{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#725cff,#13cbe9);box-shadow:0 12px 35px rgba(124,108,255,.35)}
+.navlinks{display:flex;gap:8px}.navlinks button,.navLogin{background:transparent;color:#aab5c9;border:0;padding:9px 12px;border-radius:9px}.navlinks button:hover,.navLogin:hover{background:#111a2d;color:white}
+.hero{max-width:1180px;margin:auto;padding:95px 22px 70px;display:grid;grid-template-columns:1.03fr .97fr;gap:55px;align-items:center}
+.kicker{font-size:11px;letter-spacing:.18em;color:#9c92ff;font-weight:800;text-transform:uppercase}
+.hero h1{font-size:clamp(48px,6.3vw,82px);line-height:.94;letter-spacing:-.065em;margin:16px 0 22px}
+.gradient{background:linear-gradient(100deg,#fff 10%,#a69cff 55%,#54dcff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:600px;color:#8f9cb3;line-height:1.8;font-size:15px}
+.heroActions{display:flex;gap:10px;margin-top:27px;flex-wrap:wrap}
+.btn{border:1px solid #27344e;background:#111a2c;color:#eaf0ff;border-radius:12px;padding:12px 17px;font-weight:750}
+.btn.primary{background:linear-gradient(135deg,#735fff,#5666ff);border-color:#8a7cff;box-shadow:0 14px 35px rgba(115,95,255,.25)}
+.btn.ghost{background:transparent}
+.heroCard{border:1px solid #202d45;border-radius:24px;background:linear-gradient(145deg,#10172a,#080d19);box-shadow:var(--shadow);overflow:hidden;transform:perspective(1100px) rotateY(-4deg) rotateX(2deg)}
+.windowTop{height:44px;padding:0 15px;border-bottom:1px solid #1b2740;display:flex;align-items:center;gap:7px;color:#6d7b93;font-size:10px}
+.dot{width:7px;height:7px;border-radius:50%;background:#26324a}.windowBody{padding:22px;font:12px/1.85 ui-monospace,SFMono-Regular,Menlo,monospace;color:#cdd8e8}
+.codeLine{display:flex;gap:18px}.ln{color:#3e4b63;width:18px;text-align:right}.kw{color:#c59cff}.str{color:#75e1ff}.fn{color:#ffd166}
+.previewMini{margin:20px 0 0 36px;border:1px solid #22314a;border-radius:13px;padding:15px;background:#0b1220}.previewMini strong{font-size:18px}.previewMini p{font:11px/1.5 system-ui;color:#7f8da5;margin:7px 0}.previewMini span{display:inline-block;background:#695cff;border-radius:7px;padding:6px 9px;color:white;font:700 10px system-ui}
+.strip{max-width:1180px;margin:auto;padding:0 22px 35px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:18px;border:1px solid #17233a;border-radius:15px;background:rgba(11,16,32,.65)}.stat b{display:block;font-size:13px}.stat span{color:#65748d;font-size:10px;line-height:1.5}
+.features{max-width:1180px;margin:auto;padding:75px 22px}.features h2{font-size:35px;letter-spacing:-.04em;margin:8px 0}.lead{color:#718099;font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:28px}.feature{padding:22px;border:1px solid #17233a;border-radius:16px;background:#0a1020}.featureIcon{font-size:20px;margin-bottom:17px}.feature h3{font-size:14px;margin:0 0 7px}.feature p{color:#6f7d95;font-size:11px;line-height:1.65;margin:0}
+.cta{max-width:1180px;margin:0 auto 70px;padding:32px;border:1px solid #283654;border-radius:21px;background:linear-gradient(110deg,rgba(115,95,255,.12),rgba(66,216,255,.04));display:flex;justify-content:space-between;align-items:center;gap:20px}.cta h2{margin:0 0 7px;font-size:24px}.cta p{margin:0;color:#718099;font-size:11px}
+
+/* New home page */
+.homeTop{max-width:1180px;margin:auto;padding:0 22px}.homeHero{max-width:1180px;margin:auto;padding:78px 22px 55px;display:grid;grid-template-columns:1.08fr .92fr;gap:45px;align-items:center}.homeHero h1{font-size:clamp(44px,6vw,76px);line-height:.96;letter-spacing:-.06em;margin:12px 0 20px}.homeHero p{max-width:650px;color:#91a0b8;font-size:15px;line-height:1.8}.homeBadge{display:inline-flex;gap:8px;align-items:center;border:1px solid #293752;background:#0c1424;color:#aebbd0;padding:7px 10px;border-radius:999px;font-size:9px;letter-spacing:.1em;text-transform:uppercase}.homeActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}.googleBtn{display:inline-flex;align-items:center;gap:9px}.googleDot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#4285f4;font-weight:900;font-size:12px}.homePanel{border:1px solid #24334e;background:linear-gradient(145deg,#10182a,#090f1c);border-radius:22px;padding:20px;box-shadow:0 25px 80px rgba(0,0,0,.35)}.homePanelTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.homePanelTitle b{font-size:12px}.homeStatus{font-size:8px;color:#31d6a0}.homeLangs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.homeLang{padding:12px;border:1px solid #1d2c45;background:#0b1322;border-radius:11px;color:#dce5f5}.homeLang b{display:block;font-size:11px}.homeLang span{display:block;color:#65748d;font-size:8px;margin-top:4px}.homeSteps{max-width:1180px;margin:auto;padding:20px 22px 75px}.homeSteps h2{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}.homeStepsLead{color:#718099;font-size:12px}.homeStepGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:24px}.homeStep{border:1px solid #17233a;background:#0a1020;border-radius:15px;padding:18px}.homeStepNum{font-size:10px;color:#8e83ff;font-weight:900;letter-spacing:.12em}.homeStep h3{font-size:13px;margin:9px 0 6px}.homeStep p{font-size:10px;color:#6f7d95;line-height:1.6;margin:0}.homeSave{max-width:1180px;margin:0 auto 70px;padding:26px 22px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.homeInfo{border:1px solid #263550;background:#0b1220;border-radius:16px;padding:20px}.homeInfo h3{margin:0 0 8px;font-size:14px}.homeInfo p,.homeInfo li{font-size:10px;line-height:1.7;color:#738199}.homeInfo ul{margin:8px 0 0;padding-left:18px}.sideBtn[data-lang].active{background:#171a3c;color:white;border-left:2px solid #7569ff}.homeFooter{max-width:1180px;margin:auto;padding:0 22px 45px;color:#56657d;font-size:9px;text-align:center}
+@media(max-width:900px){.homeHero{grid-template-columns:1fr}.homeStepGrid{grid-template-columns:1fr 1fr}.homeSave{grid-template-columns:1fr}}
+@media(max-width:600px){.homeHero{padding-top:50px}.homeStepGrid,.homeLangs{grid-template-columns:1fr}.homeTop{padding:0 12px}.homeHero,.homeSteps{padding-left:15px;padding-right:15px}}
+
+#app{display:none;min-height:100vh;background:#070b15}
+.topbar{height:62px;border-bottom:1px solid #172238;background:rgba(7,11,21,.92);display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:20;backdrop-filter:blur(14px)}
+.topLeft{display:flex;align-items:center;gap:12px}.miniLogo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#735fff,#18cde8);font-weight:900;font-size:12px}
+.crumb{font-size:11px;color:#8795aa}.crumb b{color:#edf2ff}.cloud{font-size:10px;color:#728198;display:flex;align-items:center;gap:6px}.cloud i{width:7px;height:7px;border-radius:50%;background:#64748b}.cloud.ok i{background:var(--green);box-shadow:0 0 12px rgba(49,214,160,.7)}
+.account{background:#10192b;border:1px solid #23304a;color:#dbe4f4;border-radius:9px;padding:8px 11px;font-size:10px}
+.layout{display:grid;grid-template-columns:225px 1fr;min-height:calc(100vh - 62px)}
+.sidebar{border-right:1px solid #172238;background:#080d18;padding:15px 10px;display:flex;flex-direction:column;gap:5px}
+.sideSection{font-size:8px;letter-spacing:.16em;color:#4f5e76;padding:15px 10px 7px}.sideBtn{border:0;background:transparent;color:#8290a6;text-align:left;padding:10px;border-radius:9px;font-size:11px}.sideBtn:hover,.sideBtn.active{background:#111a2c;color:white}.sideBottom{margin-top:auto;border-top:1px solid #172238;padding-top:12px}
+.main{min-width:0}.view{padding:30px;min-height:calc(100vh - 62px)}.viewHead{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:18px}.eyebrow{font-size:8px;color:#8e83ff;letter-spacing:.16em;font-weight:800}.view h1{font-size:28px;letter-spacing:-.045em;margin:7px 0}.viewLead{font-size:11px;color:#687790;margin:0}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:10px;min-height:650px}.panel{border:1px solid #17243a;border-radius:14px;background:#090f1b;overflow:hidden}.panelHead{height:39px;padding:0 12px;border-bottom:1px solid #17243a;display:flex;align-items:center;justify-content:space-between;color:#7d8ba2;font-size:9px}.panelHead b{color:#dbe4f2}.editorArea{height:520px;width:100%;border:0;outline:0;resize:none;background:#070c16;color:#dbe6f5;padding:17px;font:12px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;tab-size:4}.terminal{height:130px;border-top:1px solid #17243a;background:#050910}.terminal pre{margin:0;padding:13px;height:90px;overflow:auto;color:#9ff0cb;font:11px/1.6 ui-monospace,monospace;white-space:pre-wrap}.inspector{padding:0}.inspectBlock{padding:14px;border-bottom:1px solid #17243a}.inspectBlock h4{font-size:9px;margin:0 0 10px;color:#95a2b8}.kv{display:flex;justify-content:space-between;padding:5px 0;font:9px ui-monospace,monospace}.kv span{color:#5f6e86}.kv b{color:#72ddff;font-weight:500}.tip{font-size:10px;line-height:1.7;color:#6f7d94}.actions{display:flex;gap:7px}.smallBtn{padding:8px 10px;border-radius:8px;border:1px solid #27344d;background:#111a2b;color:#dce5f5;font-size:9px;font-weight:750}.smallBtn.primary{background:#675aff;border-color:#7d71ff}
+
+.webGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:calc(100vh - 205px);min-height:510px}.prompt{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}.input{width:100%;background:#0b1322;border:1px solid #22314b;color:white;border-radius:10px;padding:11px 12px;outline:none;font-size:11px}.input:focus{border-color:#7569ff;box-shadow:0 0 0 3px rgba(117,105,255,.1)}.htmlEditor{width:100%;height:calc(100% - 39px);resize:none;border:0;outline:0;background:#070c16;color:#dbe6f5;padding:16px;font:11px/1.7 ui-monospace,monospace}.preview{width:100%;height:calc(100% - 39px);border:0;background:white}.previewFrame{width:100%;height:100%;border:0;background:white}
+.modeTabs{display:flex;gap:5px;margin-bottom:10px}.modeTabs button{border:1px solid #23314a;background:#0d1525;color:#78869d;border-radius:8px;padding:7px 10px;font-size:9px}.modeTabs button.active{background:#695cff;color:white;border-color:#7d71ff}
+.debugGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:540px}.debugText{width:100%;height:430px;background:#070c16;border:0;outline:0;resize:none;color:#dbe6f5;padding:15px;font:11px/1.7 ui-monospace,monospace}.analysis{padding:18px}.analysis h3{font-size:14px;margin:0 0 8px}.analysis p{font-size:11px;color:#718099;line-height:1.7}.fix{padding:13px;border:1px solid #20304a;border-radius:10px;background:#0c1525;margin-top:12px;color:#b9c6d9;font:10px/1.6 ui-monospace,monospace;white-space:pre-wrap}
+.challengeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.challenge{border:1px solid #1a2940;background:#0a101d;border-radius:14px;padding:19px}.challenge small{font-size:8px;color:#39d9a4;letter-spacing:.13em}.challenge h3{margin:9px 0 7px;font-size:15px}.challenge p{font-size:10px;line-height:1.65;color:#6d7b92;min-height:65px}
+.projectGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.project{padding:17px;border:1px solid #1a2940;background:#0a101d;border-radius:13px}.projectTop{display:flex;justify-content:space-between}.projectIcon{font-size:20px}.project h3{font-size:12px;margin:12px 0 4px}.project p{font-size:9px;color:#68768d;margin:0}.project button{margin-top:14px}
+.emptyState{padding:55px 20px;text-align:center;color:#64738b}.emptyState strong{display:block;color:#aab6ca;margin-bottom:5px}.emptyState span{font-size:10px}
+
+
+
+.webControls{padding:16px;margin-bottom:10px}.webPromptMain{margin-bottom:12px}.fieldLabel{display:block;font-size:8px;letter-spacing:.12em;color:#75839a;font-weight:800}.webPromptBox{display:block;margin-top:7px;resize:vertical;min-height:95px;line-height:1.55}.webOptions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px}.webOptions .input{margin-top:6px}.webActionRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.webActionRow span{font-size:9px;color:#66758e}.modeTabs{margin-top:2px}
+@media(max-width:700px){.webOptions{grid-template-columns:1fr}.webActionRow{align-items:stretch;flex-direction:column}.webActionRow .btn{width:100%}}
+.practiceQuestion{padding:18px;margin-bottom:10px;border:1px solid #17243a;border-radius:14px;background:#090f1b}
+.practiceQuestion h3{font-size:13px;margin:0 0 7px}.questionTag{font-size:8px;color:#8d82ff;letter-spacing:.12em;font-weight:800}.questionText{font-size:11px;line-height:1.7;color:#aebbd0;margin:8px 0 13px}.questionAnswer{width:100%;min-height:115px;resize:vertical;background:#070c16;color:#dbe6f5;border:1px solid #1d2c45;border-radius:9px;padding:12px;font:10px/1.6 ui-monospace,monospace;outline:none}.questionAnswer:focus{border-color:#7569ff}.mcqGrid{display:grid;gap:7px}.mcqOption{border:1px solid #20304a;background:#0d1525;color:#aab8cb;border-radius:9px;padding:10px;text-align:left;font-size:10px}.mcqOption.selected{border-color:#776aff;background:#191c40;color:white}.resultGood{color:#31d6a0}.resultBad{color:#ff7088}.keyItem{padding:12px 0;border-bottom:1px solid #1a2940;font-size:10px;line-height:1.6}.keyItem code{display:block;margin-top:7px;padding:9px;border-radius:8px;background:#070c16;color:#bfe8ff;white-space:pre-wrap;font:10px/1.6 ui-monospace,monospace}
+.webControls{padding:16px;margin-bottom:10px}.webPromptMain{margin-bottom:12px}.fieldLabel{display:block;font-size:8px;letter-spacing:.12em;color:#75839a;font-weight:800}.webPromptBox{display:block;margin-top:7px;resize:vertical;min-height:95px;line-height:1.55}.webOptions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px}.webOptions .input{margin-top:6px}.webActionRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}.webActionRow span{font-size:9px;color:#66758e}.modeTabs{margin-top:2px}
+@media(max-width:700px){.webOptions{grid-template-columns:1fr}.webActionRow{align-items:stretch;flex-direction:column}.webActionRow .btn{width:100%}}
+.practiceQuestion{padding:14px}}
+
+#pyInputOverlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(2,5,12,.72);backdrop-filter:blur(8px)}
+#pyInputOverlay.show{display:flex}.pyInputCard{width:min(430px,calc(100vw - 30px));padding:21px;border:1px solid #2b3a57;border-radius:16px;background:#0b1322;box-shadow:0 30px 100px rgba(0,0,0,.6)}.pyInputCard h3{font-size:15px;margin:7px 0 14px}.pyInputCard .input{background:#070c16}
+.toast{position:fixed;right:18px;bottom:18px;z-index:100;padding:11px 14px;border:1px solid #293753;background:#10192b;color:#dce6f5;border-radius:10px;font-size:10px;box-shadow:var(--shadow);display:none}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.heroCard{transform:none}.strip{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr 1fr}.workspace{grid-template-columns:1fr}.inspector{display:none}.webGrid,.debugGrid{grid-template-columns:1fr}.webGrid{height:auto}.panel{min-height:420px}.projectGrid,.challengeGrid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.navlinks{display:none}.hero{padding-top:60px}.strip,.grid,.projectGrid,.challengeGrid{grid-template-columns:1fr}.hero h1{font-size:48px}.view{padding:18px}.topbar{padding:0 9px}.cloud{display:none}.webGrid{min-height:800px}.prompt{grid-template-columns:1fr}.cta{margin:0 15px 45px;display:block}.cta .btn{margin-top:15px}}
+
+/* Multi-language coding lab */
+.languageGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}.langCard{border:1px solid #1d2b44;background:#0b1322;color:#aebbd0;border-radius:10px;padding:11px;text-align:left}.langCard b{display:block;color:#e8eef9;font-size:11px}.langCard span{font-size:8px;color:#697890}.langCard.active{border-color:#7569ff;background:#171a3c;box-shadow:0 0 0 1px rgba(117,105,255,.18)}.codeLab{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:10px;min-height:650px}.codeLabEditor{height:520px;width:100%;resize:none;border:0;outline:0;background:#070c16;color:#dbe6f5;padding:17px;font:12px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;tab-size:4}.runFrame{width:100%;height:560px;border:0;background:#fff}.runnerNote{font-size:9px;color:#687790;line-height:1.6}.languageSelect{width:100%;background:#0b1322;border:1px solid #22314b;color:#fff;border-radius:9px;padding:9px;font-size:10px}.practiceLangRow{display:grid;grid-template-columns:140px 1fr 1fr auto;gap:9px;align-items:end}.cloudSaveBadge{font-size:9px;color:#31d6a0}.embedFrame{width:100%;height:560px;border:0;background:#080d18}.sideLangTitle{font-size:8px;letter-spacing:.16em;color:#4f5e76;padding:15px 10px 7px}
+@media(max-width:900px){.languageGrid{grid-template-columns:repeat(2,1fr)}.codeLab{grid-template-columns:1fr}.practiceLangRow{grid-template-columns:1fr 1fr}.embedFrame{height:600px}}
+@media(max-width:600px){.languageGrid{grid-template-columns:1fr 1fr}.practiceLangRow{grid-template-columns:1fr}.codeLabEditor{height:430px}}
+
+/* ===== UX FIX PACK v4 ===== */
+:root{
+  --accent2:#a48cff;
+  --glass:rgba(12,18,34,.78);
+}
+body{overflow-x:hidden}
+button,.sideBtn,.langCard,.smallBtn,.btn,.account{transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
+button:active,.sideBtn:active,.langCard:active,.smallBtn:active,.btn:active{transform:scale(.97)}
+.sidebar{position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto;overscroll-behavior:contain}
+.sideBtn{min-height:42px}
+.sideBtn[data-lang]{position:relative}
+.sideBtn[data-lang].active:after{content:"";position:absolute;right:8px;top:50%;width:5px;height:5px;border-radius:50%;background:#8d7dff;box-shadow:0 0 12px rgba(141,125,255,.9);transform:translateY(-50%)}
+.languageGrid{position:relative}
+.langCard{cursor:pointer}
+.langCard:hover{transform:translateY(-2px);border-color:#4a477b;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.mobileMenuBtn{display:none;border:1px solid #273650;background:#10192b;color:#e7eefb;border-radius:9px;width:40px;height:40px}
+.sidebarBackdrop{display:none}
+@media(max-width:900px){
+  .layout{display:block}
+  .sidebar{position:fixed;z-index:80;left:0;top:62px;width:250px;height:calc(100vh - 62px);transform:translateX(-105%);transition:transform .25s ease;box-shadow:25px 0 70px rgba(0,0,0,.45)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebarBackdrop{display:block;position:fixed;inset:62px 0 0;z-index:70;background:rgba(2,5,12,.62);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .sidebarBackdrop.show{opacity:1;pointer-events:auto}
+  .mobileMenuBtn{display:block}
+  .topLeft{gap:8px}
+  .topLeft .crumb{max-width:45vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .view{padding:20px 16px}
+}
+@media(max-width:600px){
+  .topbar{height:58px}
+  .sidebar{top:58px;height:calc(100vh - 58px)}
+  .sidebarBackdrop{inset:58px 0 0}
+  .viewHead{align-items:flex-start;flex-direction:column}
+  .viewHead .actions{width:100%;flex-wrap:wrap}
+  .viewHead .actions>*{flex:1 1 auto}
+  .languageGrid{grid-template-columns:repeat(2,1fr)}
+  .practiceLangRow{grid-template-columns:1fr}
+  .practiceTopicWrap{width:100%}
+}
+
+/* Ambient motion */
+#app:before{content:"";position:fixed;inset:62px 0 0;pointer-events:none;background:
+ radial-gradient(600px 300px at 70% 0%,rgba(124,108,255,.07),transparent 70%),
+ radial-gradient(500px 260px at 10% 80%,rgba(66,216,255,.045),transparent 70%);
+ z-index:0}
+#app>.topbar,#app>.layout{position:relative;z-index:1}
+.view{animation:viewIn .28s ease both}
+@keyframes viewIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.panel,.challenge,.project,.feature,.homePanel,.stat{animation:cardIn .38s ease both}
+@keyframes cardIn{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+
+/* Ripple effects */
+.ripple{position:absolute;border-radius:50%;pointer-events:none;transform:scale(0);background:rgba(255,255,255,.24);animation:ripple .55s ease-out forwards}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+.cursorRipple{position:fixed;z-index:9999;width:18px;height:18px;border:1px solid rgba(141,125,255,.65);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);animation:cursorPulse .65s ease-out forwards}
+@keyframes cursorPulse{0%{opacity:.7;transform:translate(-50%,-50%) scale(.55)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.5)}}
+
+
+.toolHintBar{margin:10px 0 14px;padding:9px 12px;border:1px solid #1e2a40;border-radius:10px;background:rgba(11,18,31,.65);color:#6f7f97;font-size:9px;letter-spacing:.2px}.toolHintBar span{color:#b7c3d7;border:1px solid #2b3952;border-radius:5px;padding:2px 5px;background:#101a2c}.codeLabEditor,.editorArea,.htmlEditor,.debugText{tab-size:2;line-height:1.6;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.codeLabEditor:focus,.editorArea:focus,.htmlEditor:focus{outline:none;box-shadow:inset 0 0 0 1px rgba(130,115,255,.35)}
+
+/* HOME ROUTING FIX */
+.homeToolCard,.homeTool,[data-home-tool]{cursor:pointer;position:relative;user-select:none}
+.homeToolCard:hover,.homeTool:hover,[data-home-tool]:hover{transform:translateY(-3px)}
+.homeToolCard:active,.homeTool:active,[data-home-tool]:active{transform:translateY(-1px) scale(.99)}
+
+
+/* ===== HOME LANGUAGE PAGE / CATALOG ===== */
+.homeLangs{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  padding:1px;
+  border:1px solid #1d2c45;
+  border-radius:18px;
+  overflow:hidden;
+  background:#263650;
+}
+.homeLang{
+  min-height:104px;
+  padding:20px;
+  background:#09111f;
+  color:#dce5f5;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:left;
+  transition:background .2s ease,transform .2s ease,padding-left .2s ease;
+}
+.homeLang:hover,.homeLang:focus-visible{
+  background:#111b2e;
+  padding-left:24px;
+  outline:none;
+}
+.homeLang b{font-size:14px;font-weight:750}
+.homeLang span{display:block;color:#718099;font-size:9px;margin-top:7px}
+.homeLang:after{content:"Open language →";display:block;color:#7569ff;font-size:9px;margin-top:12px}
+@media(max-width:900px){.homeLangs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.homeLangs{grid-template-columns:1fr}.homeLang{min-height:84px;padding:17px}}
+
+
+
+/* ===== EMBEDDED COMPILER ===== */
+#embedEditorPanel{min-height:620px;overflow:hidden}
+#compilerFrame{width:100%;height:560px;border:0;border-radius:10px;background:#070b15}
+.embedFrame{width:100%;min-height:560px;border:0}
+.compilerNote{font-size:9px;color:#718099;margin-top:8px}
+@media(max-width:900px){#embedEditorPanel{min-height:560px}#compilerFrame{height:500px}}
+
+
+/* ===== COMPILER VISIBILITY FIX ===== */
+#embedEditorPanel{
+  display:block!important;
+  width:100%;
+  min-height:650px;
+  overflow:hidden;
+}
+#embedEditorPanel.hidden{display:none!important}
+#compilerFrame{
+  display:block!important;
+  width:100%!important;
+  height:620px!important;
+  min-height:620px;
+  border:0;
+  border-radius:10px;
+  background:#070b15;
+}
+#localEditorPanel.hidden{display:none!important}
+@media(max-width:900px){
+  #compilerFrame{height:560px!important;min-height:560px}
+  #embedEditorPanel{min-height:590px}
+}
+
+
+/* ===== PROJECT CREATION ===== */
+.sideHint{font-size:8px;line-height:1.45;color:#506078;padding:10px 12px}
+.projectModal{display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;padding:20px}
+.projectModal.show{display:flex}
+.projectModalBackdrop{position:absolute;inset:0;background:rgba(2,5,12,.72);backdrop-filter:blur(7px)}
+.projectModalCard{position:relative;width:min(620px,100%);max-height:85vh;overflow:auto;background:#0b1322;border:1px solid #293957;border-radius:20px;box-shadow:0 30px 100px rgba(0,0,0,.55);padding:22px}
+.projectModalHead{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}
+.projectModalHead h2{margin:5px 0 5px;font-size:22px}
+.projectModalHead p{margin:0;color:#708099;font-size:10px}
+.projectLanguageGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.projectLanguageOption{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid #22324c;border-radius:12px;background:#0d1728;color:#e5ecf8;text-align:left;cursor:pointer;transition:.18s ease}
+.projectLanguageOption:hover{border-color:#7569ff;background:#131d33;transform:translateY(-1px)}
+.projectLanguageOption .plIcon{font-size:22px;width:30px;text-align:center}
+.projectLanguageOption strong{font-size:12px;display:block}
+.projectLanguageOption span{font-size:8px;color:#697992;display:block;margin-top:4px}
+@media(max-width:600px){.projectLanguageGrid{grid-template-columns:1fr}.projectModalCard{padding:17px}}
+
+
+/* ===== SAVE AS / CLOUD STORAGE ===== */
+.saveModal{display:none;position:fixed;inset:0;z-index:220;align-items:center;justify-content:center;padding:20px}
+.saveModal.show{display:flex}.saveModalBackdrop{position:absolute;inset:0;background:rgba(2,5,12,.75);backdrop-filter:blur(7px)}
+.saveModalCard{position:relative;width:min(520px,100%);background:#0b1322;border:1px solid #293957;border-radius:20px;box-shadow:0 30px 100px rgba(0,0,0,.55);padding:22px}
+.saveFileHint{font-size:8px;color:#66768e;margin-top:7px}.saveModalActions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.saveModalStatus{min-height:14px;font-size:9px;color:#718099;margin-top:10px}.saveModalStatus.error{color:#ff8b8b}.saveModalStatus.ok{color:#7ee2a8}
+
+</style>
+</head>
+<body>
+
+<section id="landing">
+  <nav class="nav homeTop">
+    <div class="logo"><div class="logoMark">CR</div><div>Code Runner</div></div>
+    <div class="navlinks">
+      <button id="homeNavBtn">Home</button><button data-open="coding">Coding Lab</button><button data-open="web">Text → HTML</button>
+    </div>
+    <button class="navLogin googleBtn" id="navLogin"><span class="googleDot">G</span> Sign in with Google</button>
+  </nav>
+
+  <div class="homeHero">
+    <div>
+      <div class="homeBadge">⚡ Multi-language coding workspace</div>
+      <h1>Learn code.<br><span class="gradient">Run code.</span><br>Keep it.</h1>
+      <p>Practice eight popular languages in one place. Write code, run it, build websites, and keep your work connected to your Google account.</p>
+      <div class="homeActions">
+        <button class="btn primary" id="startBtn">Open Coding Lab →</button>
+        <button class="btn ghost googleBtn" id="homeLogin"><span class="googleDot">G</span> Sign in & save your work</button>
+        <button class="btn ghost" id="guestBtn">Try without signing in</button>
+      </div>
+    </div>
+    <div class="homePanel">
+      <div class="homePanelTitle"><b>YOUR CODING TOOLKIT</b><span class="homeStatus">● READY</span></div>
+      <div class="homeLangs">
+        <div class="homeLang" data-home-lang="python" role="link" tabindex="0"><b>🐍 Python</b><span>Open editor · run code</span></div>
+        <div class="homeLang" data-home-lang="javascript" role="link" tabindex="0"><b>⚡ JavaScript</b><span>Open editor · run code</span></div>
+        <div class="homeLang" data-home-lang="cpp" role="link" tabindex="0"><b>💻 C++</b><span>Online compiler</span></div>
+        <div class="homeLang" data-home-lang="c" role="link" tabindex="0"><b>🔵 C</b><span>Online compiler</span></div>
+        <div class="homeLang" data-home-lang="java" role="link" tabindex="0"><b>☕ Java</b><span>Online compiler</span></div>
+        <div class="homeLang" data-home-lang="html" role="link" tabindex="0"><b>🌐 HTML</b><span>Live preview</span></div>
+        
+        <div class="homeLang" data-home-lang="sql" role="link" tabindex="0"><b>🗄️ SQL</b><span>SQLite compiler</span></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="homeSteps">
+    <div class="kicker">HOW IT WORKS</div>
+    <h2>Everything you need to start coding.</h2>
+    <p class="homeStepsLead">No complicated setup. Choose a language and start practising.</p>
+    <div class="homeStepGrid">
+      <article class="homeStep"><div class="homeStepNum">01 · SIGN IN</div><h3>Use your Google account</h3><p>Sign in with Google and your saved coding work is tied to your Firebase account.</p></article>
+      <article class="homeStep"><div class="homeStepNum">02 · CHOOSE</div><h3>Pick a language</h3><p>Switch between Python, JavaScript, C++, C, Java, HTML, CSS and SQL from the sidebar.</p></article>
+      <article class="homeStep"><div class="homeStepNum">03 · BUILD</div><h3>Write and run</h3><p>Use browser runners for web languages and embedded compilers where required.</p></article>
+      <article class="homeStep"><div class="homeStepNum">04 · SAVE</div><h3>Keep your work</h3><p>Save your projects locally or sync them to your Google account when signed in.</p></article>
+    </div>
+  </section>
+
+  <section class="homeSave">
+    <div class="homeInfo"><h3>☁ What gets saved?</h3><p>When you are signed in, the app can keep your language files and workspace state in your existing Firebase Firestore account.</p><ul><li>Code files for each language</li><li>Current language and workspace state</li><li>Practice selections and progress</li><li>Text → HTML workspace state</li></ul></div>
+    <div class="homeInfo"><h3>🔐 Guest vs Google account</h3><p><b>Guest:</b> your drafts stay in this browser using local storage.</p><p><b>Google:</b> your work is synced to your account, so you can return to it after signing in again.</p><button class="smallBtn primary" id="homeLoginBottom">Sign in with Google</button></div>
+  </section>
+
+  <div class="cta"><div><h2>Ready to start?</h2><p>Open the lab, choose a language and write your first program.</p></div><button class="btn primary" id="ctaBtn">Open Coding Lab →</button></div>
+  <div class="homeFooter">Code Runner · Eight languages · Coding practice · Cloud saves with your existing Google/Firebase login</div>
+</section>
+<section id="app">
+  <header class="topbar">
+    <div class="topLeft"><button class="mobileMenuBtn" id="mobileMenuBtn" aria-label="Open coding tools">☰</button><div class="miniLogo">PR</div><div class="crumb"><span>Python Runner</span> / <b id="crumb">Python Lab</b></div></div>
+    <div style="display:flex;align-items:center;gap:9px"><div class="cloud" id="cloudStatus"><i></i><span>Guest mode</span></div><button class="account" id="accountBtn">Sign in with Google</button></div>
+  </header>
+  <div class="sidebarBackdrop" id="sidebarBackdrop"></div>
+  <div class="layout">
+    <aside class="sidebar" id="mainSidebar">
+      <div class="sideSection">TOOLS</div>
+      <button class="sideBtn" id="homeSideBtn">⌂ <span>Home</span></button>
+      <button class="sideBtn active" data-view="coding">💻 <span>Coding Lab</span></button>
+      <button class="sideBtn" data-view="web">✨ <span>Text → HTML</span></button>
+      <div class="sideLangTitle">CODE LANGUAGES</div>
+      <button class="sideBtn" data-lang="python">🐍 <span>Python</span></button>
+      <button class="sideBtn" data-lang="javascript">⚡ <span>JavaScript</span></button>
+      <button class="sideBtn" data-lang="cpp">💻 <span>C++</span></button>
+      <button class="sideBtn" data-lang="c">🔵 <span>C</span></button>
+      <button class="sideBtn" data-lang="java">☕ <span>Java</span></button>
+      <button class="sideBtn" data-lang="html">🌐 <span>HTML</span></button>
+      <button class="sideBtn" data-lang="sql">🗄️ <span>SQL</span></button>
+      <button class="sideBtn" data-view="projects">📁 <span>Projects</span></button>
+      <div class="sideBottom"><div class="sideHint">Create projects from the Projects tab.</div></div>
+    </aside>
+
+    <main class="main">
+      <section class="view" id="view-coding">
+        <div class="viewHead"><div><div class="eyebrow">MULTI-LANGUAGE CODING LAB</div><h1 id="codingTitle">Python Lab</h1><p class="viewLead" id="codingLead">Write, run and practise Python — then switch languages without leaving your workspace.</p></div><div class="actions"><span class="cloudSaveBadge" id="autoSaveStatus">Guest · local autosave</span><button class="smallBtn" id="newLangFile">New</button><button class="smallBtn" id="saveLangFile">☁ Save As</button><button class="smallBtn primary" id="runLang">▶ Run</button></div></div>
+        <div class="languageGrid" id="languageGrid"></div>
+        <div class="toolHintBar"><span>⌘/Ctrl + Enter</span> Run &nbsp;·&nbsp; <span>⌘/Ctrl + S</span> Save &nbsp;·&nbsp; <span>New</span> Reset the current file</div>
+        <div class="codeLab">
+          <div class="panel" id="localEditorPanel"><div class="panelHead"><b id="langFilename">main.py</b><span id="langRuntime">Python 3.11 · browser</span></div><textarea class="codeLabEditor" id="langCode" spellcheck="false"></textarea><div class="terminal"><div class="panelHead"><b>OUTPUT</b><button class="smallBtn" id="clearLangOutput">Clear</button></div><pre id="langOutput">Ready. Choose a language and press Run.</pre></div></div>
+          <div class="panel hidden" id="embedEditorPanel"><div class="panelHead"><b id="embedTitle">Online compiler</b><span>RUN + EDIT</span></div><iframe class="embedFrame" id="compilerFrame" title="Code compiler"></iframe></div>
+          <aside class="panel inspector"><div class="panelHead"><b>Language</b><span id="langBadge">PYTHON</span></div><div class="inspectBlock"><h4>WORKSPACE</h4><div class="kv"><span>language</span><b id="langInfo">Python</b></div><div class="kv"><span>save</span><b>Google cloud</b></div></div><div class="inspectBlock"><h4>HOW IT WORKS</h4><div class="runnerNote" id="runnerHelp">Python continues to run locally in the browser with the existing Pyodide runtime. Other compiled languages use the embedded embedded compiler.</div></div><div class="inspectBlock"><h4>ACCOUNT</h4><div class="runnerNote">Sign in with the same Google account. Your language files use the existing <code>users/{uid}/files</code> Firestore collection, so the current login system is preserved.</div></div></aside>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-python">
+        <div class="viewHead"><div><div class="eyebrow">PYTHON LAB</div><h1>Write. Run. Learn.</h1><p class="viewLead">A clean Python workspace with browser execution and cloud-ready saves.</p></div><div class="actions"><button class="smallBtn" id="newPy">New</button><button class="smallBtn" id="savePy">☁ Save</button><button class="smallBtn primary" id="runPy">▶ Run</button></div></div>
+        <div class="workspace">
+          <div class="panel">
+            <div class="panelHead"><b>main.py</b><span>Python 3.11 · UTF-8</span></div>
+            <textarea class="editorArea" id="pyCode" spellcheck="false">name = input("What is your name? ")
+print(f"Hello, {name}!")
+
+for i in range(5):
+    print(f"Index: {i}")</textarea>
+            <div class="terminal"><div class="panelHead"><b>TERMINAL</b><button class="smallBtn" id="clearTerm">Clear</button></div><pre id="pyOutput">Ready. Press Run.</pre></div>
+          </div>
+          <aside class="panel inspector">
+            <div class="panelHead"><b>Inspector</b><span>LIVE</span></div>
+            <div class="inspectBlock"><h4>RUNTIME</h4><div class="kv"><span>engine</span><b>Pyodide</b></div><div class="kv"><span>python</span><b>3.11</b></div><div class="kv"><span>status</span><b id="runtimeState">Loading</b></div></div>
+            <div class="inspectBlock"><h4>QUICK TIP</h4><div class="tip">Use <code>input()</code> for interactive programs. Start small, run often, then improve.</div></div>
+            <div class="inspectBlock"><h4>SHORTCUTS</h4><div class="tip"><b>Ctrl / Cmd + Enter</b> · Run<br><b>Ctrl / Cmd + S</b> · Save<br><b>Ctrl / Cmd + K</b> · Command palette</div></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-web">
+        <div class="viewHead">
+          <div>
+            <div class="eyebrow">TEXT → HTML CODE</div>
+            <h1>Describe. Generate. Run.</h1>
+            <p class="viewLead">Write a description, generate HTML code, edit it, and run the website whenever you want.</p>
+          </div>
+          <div class="actions"><button class="smallBtn" id="webReset">Reset</button><button class="smallBtn" id="webDownload">Download HTML</button></div>
+        </div>
+        <div class="panel" style="padding:16px;margin-bottom:10px">
+          <label class="fieldLabel">DESCRIBE THE WEBSITE</label>
+          <textarea class="input webPromptBox" id="webPrompt" rows="4" placeholder="Example: Create a simple school website with a title, about section and contact button."></textarea>
+          <div class="webActionRow"><span id="webPromptStatus">Enter a description to generate HTML code.</span><button class="btn primary" id="generateHtml">Generate HTML</button></div>
+        </div>
+        <div class="webGrid">
+          <div class="panel">
+            <div class="panelHead"><b>index.html</b><span>HTML CODE</span></div>
+            <textarea class="htmlEditor" id="htmlCode" spellcheck="false" placeholder="Generated HTML code will appear here..."></textarea>
+          </div>
+          <div class="panel">
+            <div class="panelHead"><b>WEBSITE OUTPUT</b><button class="smallBtn primary" id="runWebsite">▶ Run Website</button></div>
+            <iframe class="previewFrame" id="htmlPreview" title="Website output" sandbox="allow-scripts allow-forms allow-modals"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-projects">
+        <div class="viewHead"><div><div class="eyebrow">PROJECTS</div><h1>Your workspace.</h1><p class="viewLead">Create a project in any supported language, then open it in Coding Lab.</p></div><div class="actions"><button class="smallBtn" id="refreshFiles">↻ Refresh</button><button class="smallBtn primary" id="projectsNewProject">＋ New Project</button></div></div>
+        <div class="projectGrid" id="projectGrid"></div>
+      </section>
+
+
+      <div class="saveModal" id="saveModal" aria-hidden="true">
+        <div class="saveModalBackdrop" id="saveModalBackdrop"></div>
+        <div class="saveModalCard" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
+          <div class="projectModalHead">
+            <div><div class="eyebrow">SAVE TO CLOUD</div><h2 id="saveModalTitle">Save your project</h2><p>Choose a name for this file in your Google cloud workspace.</p></div>
+            <button class="smallBtn" id="saveModalClose">×</button>
+          </div>
+          <label class="fieldLabel" for="saveFileName">FILE NAME</label>
+          <input class="input" id="saveFileName" autocomplete="off" spellcheck="false" placeholder="my-project">
+          <div class="saveFileHint" id="saveFileHint"></div>
+          <div class="saveModalActions">
+            <button class="smallBtn" id="saveCancel">Cancel</button>
+            <button class="smallBtn primary" id="saveConfirm">☁ Save to Cloud</button>
+          </div>
+          <div class="saveModalStatus" id="saveModalStatus"></div>
+        </div>
+      </div>
+      <div class="projectModal" id="projectModal" aria-hidden="true">
+        <div class="projectModalBackdrop" id="projectModalBackdrop"></div>
+        <div class="projectModalCard" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+          <div class="projectModalHead">
+            <div>
+              <div class="eyebrow">NEW PROJECT</div>
+              <h2 id="projectModalTitle">Choose your language</h2>
+              <p>Select a language and start with a clean project.</p>
+            </div>
+            <button class="smallBtn" id="projectModalClose" aria-label="Close">×</button>
+          </div>
+          <div class="projectLanguageGrid" id="projectLanguageGrid"></div>
+        </div>
+      </div>
+
+      </main>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const toast=(m)=>{const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.style.display='none',2600)};
+const landing=$('landing'),app=$('app');
+let guest=false,currentUser=null,cloudFiles=new Map(),activeFile='main.py';
+
+function openHome(){
+  app.style.display='none';landing.style.display='block';window.scrollTo({top:0,behavior:'smooth'});
+}
+function openApp(view='coding'){
+  landing.style.display='none';app.style.display='block';switchView(view);
+}
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+  $('view-'+name).classList.remove('hidden');
+  document.querySelectorAll('.sideBtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
+  $('crumb').textContent={coding:'Coding Lab',python:'Python Lab',web:'Text → HTML',projects:'Projects',debug:'Debug Lab',practice:'Practice Studio'}[name]||'Coding Lab';window.__saveAppState?.();
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
+document.querySelectorAll('.sideBtn[data-lang]').forEach(b=>b.addEventListener('click',()=>selectLanguage(b.dataset.lang)));
+document.querySelectorAll('[data-home-lang]').forEach(b=>b.addEventListener('click',()=>selectLanguage(b.dataset.homeLang)));
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openApp(b.dataset.open)));
+$('startBtn').onclick=()=>openApp('coding');$('ctaBtn').onclick=()=>openApp('coding');$('guestBtn').onclick=()=>{guest=true;setGuestUI();openApp('coding')};$('homeSideBtn').onclick=openHome;
+const startGoogleLogin=()=>{openApp('coding');setTimeout(()=>window.__googleLogin?.(),150)};
+$('homeLogin').onclick=startGoogleLogin; $('homeLoginBottom').onclick=startGoogleLogin; $('homeNavBtn').onclick=openHome;
+
+function setGuestUI(){
+  $('cloudStatus').classList.remove('ok');$('cloudStatus').innerHTML='<i></i><span>Guest mode · local only</span>';
+  $('accountBtn').textContent='Sign in with Google';
+}
+function setCloudUI(){
+  $('cloudStatus').classList.add('ok');$('cloudStatus').innerHTML='<i></i><span>Cloud synced</span>';
+  $('accountBtn').textContent=(currentUser?.displayName||currentUser?.email||'Google account')+' · Sign out';
+}
+$('navLogin').onclick=()=>{openApp('coding');setTimeout(()=>window.__googleLogin?.(),100)};
+
+function renderHTML(){
+  const frame=$('htmlPreview');
+  if(!frame)return;
+  const code=$('htmlCode').value.trim();
+  const fallback='<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:system-ui;padding:40px"><h2>No website running.</h2><p>Generate or write HTML code, then click Run Website.</p></body></html>';
+  const source=code||fallback;
+  frame.removeAttribute('src');
+  frame.srcdoc=source;
+}
+
+$('htmlCode').addEventListener('input',()=>{});
+
+function cleanPrompt(raw){return String(raw||'').replace(/[<>]/g,' ').replace(/\s+/g,' ').trim();}
+function buildHTMLCode(prompt){
+  const safe=prompt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const title=(prompt.match(/(?:called|named|titled)\s+([A-Za-z0-9 ]+)/i)||[])[1]||'My Website';
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${title}</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#222}
+header{background:#2563eb;color:white;padding:24px}
+main{max-width:900px;margin:auto;padding:40px 20px}
+section{background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+button{background:#2563eb;color:white;border:0;border-radius:8px;padding:12px 18px}
+</style>
+</head>
+<body>
+<header><h1>${title}</h1></header>
+<main>
+<section>
+<h2>Welcome</h2>
+<p>${safe}</p>
+</section>
+<section>
+<h2>About</h2>
+<p>Edit this HTML code to add your own content.</p>
+<button>Contact Us</button>
+</section>
+</main>
+</body>
+</html>`;
+}
+$('generateHtml').onclick=()=>{
+  const prompt=cleanPrompt($('webPrompt').value);
+  if(!prompt){$('webPromptStatus').textContent='Please enter a description first.';$('webPrompt').focus();return;}
+  $('htmlCode').value=buildHTMLCode(prompt);
+  $('webPromptStatus').textContent='HTML code generated. Edit it if needed, then click Run Website.';
+  toast('HTML code generated.');
+};
+$('runWebsite').onclick=()=>{
+  if(!$('htmlCode').value.trim()){toast('Generate or write HTML code first.');return;}
+  renderHTML();toast('Website is running.');
+};
+$('webReset').onclick=()=>{
+  $('webPrompt').value='';$('htmlCode').value='';$('webPromptStatus').textContent='Enter a description to generate HTML code.';
+  $('htmlPreview').removeAttribute('src');
+  $('htmlPreview').srcdoc='<!doctype html><html><body style="font-family:system-ui;padding:40px"><h2>No website running.</h2><p>Generate or write HTML code, then click Run Website.</p></body></html>';
+};
+$('webDownload').onclick=()=>{
+  if(!$('htmlCode').value.trim()){toast('Generate or write HTML code first.');return;}
+  const b=new Blob([$('htmlCode').value],{type:'text/html'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='index.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
+};
+const LANGS={
+  python:{name:'Python',icon:'🐍',file:'main.py',mode:'embed',runtime:'Python · embedded compiler',embed:'python',starter:'print("Hello from Python!")',help:'Python runs locally in the browser with the existing Pyodide runtime.'},
+  javascript:{name:'JavaScript',icon:'⚡',file:'main.js',mode:'embed',runtime:'JavaScript · embedded compiler',embed:'javascript',starter:'console.log("Hello from JavaScript!");',help:'JavaScript runs in a sandboxed browser frame.'},
+  cpp:{name:'C++',icon:'💻',file:'main.cpp',mode:'embed',runtime:'C++ · embedded compiler',starter:'#include <iostream>\nusing namespace std;\nint main(){\n    cout << "Hello, C++!";\n    return 0;\n}',embed:'cpp'},
+  c:{name:'C',icon:'🔵',file:'main.c',mode:'embed',runtime:'C · embedded compiler',starter:'#include <stdio.h>\nint main(){\n    printf("Hello, C!");\n    return 0;\n}',embed:'c'},
+  java:{name:'Java',icon:'☕',file:'Main.java',mode:'embed',runtime:'Java · embedded compiler',starter:'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, Java!");\n    }\n}',embed:'java'},
+  html:{name:'HTML',icon:'🌐',file:'index.html',mode:'embed',runtime:'HTML · embedded compiler',embed:'html',starter:'<!doctype html>\n<html>\n<head><title>My Page</title></head>\n<body>\n  <h1>Hello, HTML!</h1>\n</body>\n</html>'},
+  css:{name:'CSS',icon:'🎨',file:'styles.css',mode:'embed',runtime:'CSS · embedded compiler',embed:'html',embed:'css',starter:'body {\n  font-family: system-ui;\n  background: #101828;\n  color: white;\n  padding: 40px;\n}\nh1 { color: #8d82ff; }'},
+  sql:{name:'SQL',icon:'🗄️',file:'main.sql',mode:'embed',runtime:'SQLite · embedded compiler',starter:'CREATE TABLE students (id INTEGER, name TEXT, marks INTEGER);\nINSERT INTO students VALUES (1, \'Asha\', 92), (2, \'Ravi\', 88);\nSELECT * FROM students;',embed:'sqlite'}
+};
+let activeLanguage='python';
+const langLocal={};
+function langKey(k){return 'codesphere_'+k}
+function buildLanguageGrid(){
+  const g=$('languageGrid'); if(!g)return; g.innerHTML='';
+  Object.entries(LANGS).filter(([key])=>key!=='css').forEach(([key,l])=>{const b=document.createElement('button');b.className='langCard';b.dataset.lang=key;b.innerHTML=`<b>${l.icon} ${l.name}</b><span>${l.mode==='embed'?'Compiler in workspace':'Run in browser'}</span>`;b.onclick=()=>selectLanguage(key);g.appendChild(b)})
+}
+function loadLocalDraft(key){
+  if(langLocal[key]!=null)return langLocal[key];
+  try{const v=localStorage.getItem(langKey(key)); if(v!=null){langLocal[key]=v;return v}}catch(e){}
+  langLocal[key]=LANGS[key].starter; return langLocal[key]
+}
+function selectLanguage(key){
+  if(!LANGS[key])return;
+  activeLanguage=key;
+  const l=LANGS[key];
+
+  document.querySelectorAll('.langCard').forEach(b=>b.classList.toggle('active',b.dataset.lang===key));
+  document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===key));
+
+  $('codingTitle').textContent=l.name+' Lab';
+  $('codingLead').textContent=`Write, run and save ${l.name} code without leaving your workspace.`;
+  $('langBadge').textContent=l.name.toUpperCase();
+  $('langInfo').textContent=l.name;
+  $('langFilename').textContent=l.file;
+  $('langRuntime').textContent=l.runtime;
+  $('runnerHelp').textContent=`${l.name} compiler is embedded directly in Coding Lab.`;
+
+  // The embedded compiler is the actual workspace for every language.
+  $('localEditorPanel').classList.add('hidden');
+  $('embedEditorPanel').classList.remove('hidden');
+  $('embedTitle').textContent=`${l.name} Compiler`;
+  $('runLang').textContent='▶ Run';
+  $('autoSaveStatus').textContent=currentUser?'Cloud autosave enabled':'Guest · local autosave';
+
+  const frame=$('compilerFrame');
+  if(frame){
+    frame.dataset.language=key;
+    frame.src=`https://onecompiler.com/embed/${l.embed||key}?theme=dark&listenToEvents=true&codeChangeEvent=true&hideTitle=true`;
+    frame.onload=()=>{
+      setTimeout(()=>populateEmbeddedCompiler(key),350);
+    };
+  }
+
+  // Keep the local draft synchronized with the cloud/local workspace,
+  // but don't display the old local editor for compiled/web languages.
+  $('langCode').value=loadLocalDraft(key);
+  $('langOutput').textContent=`${l.name} compiler ready. Press Run inside the compiler or use Run above.`;
+
+  switchView('coding');
+  window.__saveAppState?.();
+}
+
+function saveLocalDraft(){
+  if(LANGS[activeLanguage].mode!=='local')return;
+  const code=$('langCode').value; langLocal[activeLanguage]=code;
+  try{localStorage.setItem(langKey(activeLanguage),code)}catch(e){}
+  scheduleCloudSave(activeLanguage,code);
+}
+let cloudSaveTimer=null;
+function scheduleCloudSave(key,code){
+  if(!currentUser)return;
+  clearTimeout(cloudSaveTimer); $('autoSaveStatus').textContent='Saving to Google…';
+  cloudSaveTimer=setTimeout(()=>window.__saveCloudLanguage?.(key,code),1200)
+}
+function runLocalLanguage(){
+  const key=activeLanguage,code=$('langCode').value,l=LANGS[key]; $('langOutput').textContent='';
+  if(key==='python'){
+    $('pyCode').value=code;
+    if(window.__runPythonNow)window.__runPythonNow();else $('runPy').click();
+    return;
+  }
+  if(key==='javascript'){
+    const f=new Blob([`<!doctype html><body><pre id=out></pre><scr`+`ipt>try{${code}\n}catch(e){document.getElementById('out').textContent='ERROR\n'+e.stack}</scr`+`ipt>`],{type:'text/html'}); const u=URL.createObjectURL(f); const w=window.open(u,'_blank','noopener'); if(!w){$('langOutput').textContent='Popup blocked. Allow popups to run JavaScript.'}else{$('langOutput').textContent='JavaScript opened in a new sandbox tab.'} setTimeout(()=>URL.revokeObjectURL(u),30000); return;
+  }
+  if(key==='html'){$('langOutput').textContent='Live HTML preview opened below.'; const f=new Blob([code],{type:'text/html'}); const u=URL.createObjectURL(f);$('localPreviewFrame')?.remove();const fr=document.createElement('iframe');fr.id='localPreviewFrame';fr.className='runFrame';fr.sandbox='allow-scripts';fr.src=u;$('localEditorPanel').after(fr);setTimeout(()=>URL.revokeObjectURL(u),30000);return}
+  if(key==='css'){$('langOutput').textContent='CSS preview opened below. Your CSS is applied to a sample page.'; const html=`<!doctype html><html><head><style>${code}</style></head><body><h1>CSS Practice</h1><p>Edit your CSS and run again.</p><button>Sample Button</button></body></html>`;const f=new Blob([html],{type:'text/html'});const u=URL.createObjectURL(f);$('localPreviewFrame')?.remove();const fr=document.createElement('iframe');fr.id='localPreviewFrame';fr.className='runFrame';fr.sandbox='allow-scripts';fr.src=u;$('localEditorPanel').after(fr);setTimeout(()=>URL.revokeObjectURL(u),30000)}
+}
+$('langCode')?.addEventListener('input',saveLocalDraft);
+$('runLang')?.addEventListener('click',()=>{
+  const key=activeLanguage,l=LANGS[key];
+  const code=$('langCode')?.value||loadLocalDraft(key);
+  langLocal[key]=code;
+  try{localStorage.setItem(langKey(key),code)}catch(e){}
+  scheduleCloudSave(key,code);
+
+  const frame=$('compilerFrame');
+  if(!frame)return;
+
+  const send=()=>{
+    populateEmbeddedCompiler(key);
+    setTimeout(()=>triggerEmbeddedRun(),150);
+    $('langOutput').textContent=`${l.name} is running in the embedded compiler.`;
+  };
+
+  if(frame.dataset.language!==key || !frame.contentWindow){
+    frame.dataset.language=key;
+    frame.src=`https://onecompiler.com/embed/${l.embed||key}?theme=dark&listenToEvents=true&codeChangeEvent=true&hideTitle=true`;
+    frame.onload=()=>setTimeout(send,350);
+  }else{
+    send();
+  }
+});
+$('clearLangOutput')?.addEventListener('click',()=>{$('langOutput').textContent=''});
+$('newLangFile')?.addEventListener('click',()=>{const l=LANGS[activeLanguage];langLocal[activeLanguage]=l.starter;try{localStorage.setItem(langKey(activeLanguage),l.starter)}catch(e){};if(l.mode==='local')$('langCode').value=l.starter;else selectLanguage(activeLanguage);scheduleCloudSave(activeLanguage,l.starter);toast('New '+l.name+' file ready.')});
+
+/* ===== Embedded compiler bridge ===== */
+function populateEmbeddedCompiler(key){
+  const frame=$('compilerFrame');
+  const l=LANGS[key];
+  if(!frame || !frame.contentWindow || !l)return;
+  const code=loadLocalDraft(key);
+  try{
+    if(key==='css'){
+      const htmlStarter=`<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CSS Practice</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="css-preview">
+    <h1>CSS Practice</h1>
+    <p>Edit styles.css and press Run to preview your styling.</p>
+    <button>Sample Button</button>
+    <div class="card">Sample Card</div>
+  </main>
+</body>
+</html>`;
+      frame.contentWindow.postMessage({
+        eventType:'populateCode',
+        language:'html',
+        files:[
+          {name:'index.html',content:htmlStarter},
+          {name:'styles.css',content:code}
+        ]
+      },'*');
+    }else{
+      frame.contentWindow.postMessage({
+        eventType:'populateCode',
+        language:l.embed||key,
+        files:[{name:l.file,content:code}]
+      },'*');
+    }
+  }catch(e){}
+}
+function triggerEmbeddedRun(){
+  const frame=$('compilerFrame');
+  try{frame?.contentWindow?.postMessage({eventType:'triggerRun'},'*')}catch(e){}
+}
+
+buildLanguageGrid();
+['webPrompt','htmlCode','debugInput','pyCode'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{if(id==='pyCode'){langLocal.python=el.value;try{localStorage.setItem(langKey('python'),el.value)}catch(e){};scheduleCloudSave('python',el.value)}window.__saveAppState?.()})});
+
+// Browser Python runner with real input() support.
+// Pyodide's default input() cannot use the small terminal directly, so we
+// provide a stdin bridge backed by a modal input queue.
+let pyodide=null;
+let pyInputQueue=[];
+let pyInputResolver=null;
+let pyRunActive=false;
+
+function ensureInputOverlay(){
+  if($('pyInputOverlay')) return;
+  const el=document.createElement('div');
+  el.id='pyInputOverlay';
+  el.innerHTML=`
+    <div class="pyInputCard">
+      <div class="eyebrow">PYTHON INPUT</div>
+      <h3 id="pyInputPrompt">Program is asking for input</h3>
+      <input id="pyInputField" class="input" autocomplete="off" placeholder="Type a value…">
+      <div class="actions" style="justify-content:flex-end;margin-top:10px">
+        <button class="smallBtn" id="pyInputCancel">Cancel run</button>
+        <button class="smallBtn primary" id="pyInputSubmit">Enter ↵</button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  $('pyInputSubmit').onclick=()=>submitPyInput();
+  $('pyInputCancel').onclick=()=>cancelPyInput();
+  $('pyInputField').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();submitPyInput()}
+    if(e.key==='Escape'){e.preventDefault();cancelPyInput()}
+  });
+}
+function showPyInput(promptText){
+  ensureInputOverlay();
+  $('pyInputPrompt').textContent=promptText||'Program is asking for input';
+  $('pyInputField').value='';
+  $('pyInputOverlay').classList.add('show');
+  setTimeout(()=>$('pyInputField').focus(),30);
+}
+function submitPyInput(){
+  const value=$('pyInputField').value;
+  $('pyInputOverlay').classList.remove('show');
+  if(pyInputResolver){const r=pyInputResolver;pyInputResolver=null;r(value)}
+}
+function cancelPyInput(){
+  $('pyInputOverlay').classList.remove('show');
+  if(pyInputResolver){const r=pyInputResolver;pyInputResolver=null;r(null)}
+}
+function pyInput(promptText){
+  return new Promise(resolve=>{pyInputResolver=resolve;showPyInput(promptText)});
+}
+
+async function loadPython(){
+  $('runtimeState').textContent='Loading';
+  try{
+    if(!window.loadPyodide){
+      await new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src='https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js';
+        s.onload=resolve;s.onerror=reject;document.head.appendChild(s)
+      });
+    }
+    pyodide=await loadPyodide();
+
+    // Replace Python's input() with an async JavaScript bridge.
+    // runPythonAsync can await this coroutine, so input() works without
+    // freezing the browser.
+    await pyodide.runPythonAsync(`
+import builtins
+import js
+import asyncio
+
+async def _codesphere_input(prompt=""):
+    value = await js.pyInput(str(prompt))
+    if value is None:
+        raise KeyboardInterrupt("Input cancelled")
+    return value
+
+def _input(prompt=""):
+    return asyncio.run(_codesphere_input(prompt))
+
+builtins.input = _input
+`);
+    $('runtimeState').textContent='Ready';
+    $('pyOutput').textContent='Python 3.11 ready · input() enabled.';
+  }catch(e){
+    $('runtimeState').textContent='Unavailable';
+    $('pyOutput').textContent='Python runtime could not load. Web tools still work.\\n'+e.message
+  }
+}
+
+$('runPy').onclick=async()=>{
+  if(!pyodide){toast('Python runtime is still loading…');return}
+  if(pyRunActive){toast('A program is already running.');return}
+  pyRunActive=true;
+  $('runPy').disabled=true;
+  $('runPy').textContent='Running…';
+  $('pyOutput').textContent='';
+  try{
+    pyodide.setStdout({batched:s=>{$('pyOutput').textContent+=s}});
+    pyodide.setStderr({batched:s=>{$('pyOutput').textContent+=s}});
+    await pyodide.runPythonAsync($('pyCode').value);
+    if(!$('pyOutput').textContent) $('pyOutput').textContent='Program finished with no output.';
+  }catch(e){
+    $('pyOutput').textContent='ERROR\\n'+e;
+  }finally{
+    pyRunActive=false;
+    $('runPy').disabled=false;
+    $('runPy').textContent='▶ Run';
+  }
+};
+loadPython();
+selectLanguage('python');
+
+// Firebase: deliberately preserve the existing project/config and Firestore path.
+window.__googleLogin=null;
+(async()=>{
+  try{
+    const {initializeApp}=await import('https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js');
+    const {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence}=await import('https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js');
+    const {getFirestore,collection,doc,setDoc,getDocs,deleteDoc}=await import('https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js');
+    const firebaseConfig={
+      apiKey:"AIzaSyCB4j1ZHt0qlrdnQKCvw1thBzFTL9PTQRo",
+      authDomain:"python-studio-b1e38.firebaseapp.com",
+      projectId:"python-studio-b1e38",
+      storageBucket:"python-studio-b1e38.firebasestorage.app",
+      messagingSenderId:"579574340270",
+      appId:"1:579574340270:web:78f8dcea970246fac92b3f",
+      measurementId:"G-W491W9KKNH"
+    };
+    const fb=initializeApp(firebaseConfig),auth=getAuth(fb),db=getFirestore(fb),provider=new GoogleAuthProvider();
+    window.__saveCloudLanguage=async(key,code,manual=false)=>{
+      if(!currentUser){if(manual)toast('Sign in with Google to save this file to the cloud.');return}
+      const l=LANGS[key],name='__'+key+'__'+l.file;
+      try{await setDoc(doc(db,'users',currentUser.uid,'files',name),{code:code,language:key,filename:l.file,updatedAt:new Date().toISOString()});$('autoSaveStatus').textContent='✓ Saved to Google';if(manual){await loadCloudFiles();toast(l.name+' saved to your Google account.')}}catch(e){$('autoSaveStatus').textContent='Cloud save failed';if(manual)toast('Cloud save failed: '+(e?.message||'Firebase error'))}
+    };
+    let appStateTimer=null;window.__saveAppState=()=>{if(!currentUser)return;clearTimeout(appStateTimer);appStateTimer=setTimeout(async()=>{const state={activeLanguage,langLocal,webPrompt:document.getElementById('webPrompt')?.value||'',htmlCode:document.getElementById('htmlCode')?.value||'',debugInput:document.getElementById('debugInput')?.value||'',view:[...document.querySelectorAll('.view')].find(v=>!v.classList.contains('hidden'))?.id?.replace('view-','')||'coding'};try{await setDoc(doc(db,'users',currentUser.uid,'files','_app_state.json'),{code:JSON.stringify(state),type:'app-state',updatedAt:new Date().toISOString()})}catch(e){}},1000)};
+    window.__googleLogin=async()=>{
+      try{await setPersistence(auth,browserLocalPersistence);await signInWithPopup(auth,provider)}
+      catch(e){toast(e?.code==='auth/unauthorized-domain'?'Firebase: this domain is not authorized.':(e?.message||'Google sign-in failed.'))}
+    };
+    onAuthStateChanged(auth,async user=>{
+      currentUser=user||null;
+      if(user){guest=false;setCloudUI();await loadCloudFiles()}
+      else if(!guest)setGuestUI();
+    });
+    $('accountBtn').addEventListener('click',async()=>{if(currentUser)await signOut(auth);else window.__googleLogin()});
+    window.__saveNamedCloudFile=async(fileName,code,key)=>{
+      if(!currentUser)throw new Error('Please sign in with Google first.');
+      const l=LANGS[key];
+      if(!l)throw new Error('Unsupported language.');
+      await setDoc(doc(db,'users',currentUser.uid,'files',fileName),{
+        code:code,language:key,filename:fileName,updatedAt:new Date().toISOString()
+      });
+      cloudFiles.set(fileName,code);
+      langLocal[key]=code;
+      try{localStorage.setItem(langKey(key),code)}catch(e){}
+      activeFile=fileName;
+      await loadCloudFiles();
+      window.__saveAppState?.();
+      return true;
+    };
+    $('savePy').onclick=async()=>{
+      if(!currentUser){toast('Sign in with Google to save to the cloud. Guest work stays local.');return}
+      const name=prompt('Filename','main.py');if(!name)return;
+      if(!/^[a-zA-Z0-9._-]+$/.test(name)){toast('Use letters, numbers, dots, hyphens or underscores.');return}
+      try{
+        await setDoc(doc(db,'users',currentUser.uid,'files',name),{code:$('pyCode').value,updatedAt:new Date().toISOString()});
+        activeFile=name;await loadCloudFiles();toast('Saved to your Google account.');window.__saveAppState?.()
+      }catch(e){toast('Cloud save failed: '+(e?.message||'Firebase error'))}
+    };
+    $('refreshFiles').onclick=loadCloudFiles;
+    async function loadCloudFiles(){
+      if(!currentUser)return;
+      cloudFiles.clear();
+      try{
+        const snap=await getDocs(collection(db,'users',currentUser.uid,'files'));
+        snap.forEach(x=>{const d=x.data();cloudFiles.set(x.id,d.code||'');if(d.language&&LANGS[d.language]){langLocal[d.language]=d.code||LANGS[d.language].starter;try{localStorage.setItem(langKey(d.language),d.code||LANGS[d.language].starter)}catch(e){}}if(x.id==='_app_state.json'&&d.code){try{const st=JSON.parse(d.code);if(st.langLocal)Object.assign(langLocal,st.langLocal);if(st.activeLanguage)activeLanguage=st.activeLanguage;if(document.getElementById('webPrompt'))document.getElementById('webPrompt').value=st.webPrompt||'';if(document.getElementById('htmlCode'))document.getElementById('htmlCode').value=st.htmlCode||'';if(document.getElementById('debugInput'))document.getElementById('debugInput').value=st.debugInput||''}catch(e){}}});
+        renderProjects();
+        if(LANGS[activeLanguage])selectLanguage(activeLanguage);
+      }catch(e){toast('Could not load cloud files. Check Firestore Rules.')}
+    }
+    function renderProjects(){
+      const g=$('projectGrid');g.innerHTML='';
+      if(!currentUser){g.innerHTML='<div class="emptyState"><strong>Sign in to see your cloud files.</strong><span>Your existing Firebase files will appear here.</span></div>';return}
+      if(!cloudFiles.size){g.innerHTML='<div class="emptyState"><strong>No cloud files yet.</strong><span>Save code in any supported language to create your first project.</span></div>';return}
+      [...cloudFiles.keys()].filter(name=>name!=='_app_state.json').sort().forEach(name=>{
+        const p=document.createElement('article');p.className='project';
+        p.innerHTML=`<div class="projectTop"><div class="projectIcon">${name.endsWith('.html')?'🌐':name.endsWith('.css')?'🎨':'🐍'}</div><span style="font-size:8px;color:#596982">☁ CLOUD</span></div><h3>${name.replace(/</g,'&lt;')}</h3><p>Saved in your Firebase account.</p><button class="smallBtn primary">Open →</button>`;
+        p.querySelector('button').onclick=()=>{const code=cloudFiles.get(name)||'';const match=name.match(/^__(python|javascript|cpp|c|java|html|css|sql)__/);if(match){const key=match[1];langLocal[key]=code;selectLanguage(key);return}if(name.endsWith('.html')){$('htmlCode').value=code;renderHTML();switchView('web')}else{$('pyCode').value=code;activeFile=name;switchView('python')}};
+        g.appendChild(p);
+      })
+    }
+    renderProjects();
+  }catch(e){
+    console.error(e);setGuestUI();toast('Firebase could not initialize. Guest mode remains available.')
+  }
+})();
+</script>
+<script>
+// Always start users on the public home page. Opening the app is an explicit action.
+landing.style.display='block';app.style.display='none';
+
+/* ===== Interaction polish ===== */
+(function(){
+  const sidebar=$('mainSidebar'), backdrop=$('sidebarBackdrop'), menu=$('mobileMenuBtn');
+  function closeSidebar(){sidebar?.classList.remove('open');backdrop?.classList.remove('show')}
+  function openSidebar(){sidebar?.classList.add('open');backdrop?.classList.add('show')}
+  menu?.addEventListener('click',()=>sidebar?.classList.contains('open')?closeSidebar():openSidebar());
+  backdrop?.addEventListener('click',closeSidebar);
+  document.querySelectorAll('.sidebar .sideBtn').forEach(b=>b.addEventListener('click',()=>{if(innerWidth<=900)closeSidebar()}));
+
+  function addRipple(el,x,y){
+    if(!el || !el.getBoundingClientRect)return;
+    if(getComputedStyle(el).position==='static')el.style.position='relative';
+    const r=document.createElement('span');r.className='ripple';
+    const rect=el.getBoundingClientRect(), size=Math.max(rect.width,rect.height)*1.5;
+    r.style.width=r.style.height=size+'px';
+    r.style.left=(x-rect.left-size/2)+'px';r.style.top=(y-rect.top-size/2)+'px';
+    el.appendChild(r);setTimeout(()=>r.remove(),650);
+  }
+  document.addEventListener('pointerdown',e=>{
+    const target=e.target.closest('button,.btn,.smallBtn,.sideBtn,.langCard,.topicChip,.account');
+    if(target)addRipple(target,e.clientX,e.clientY);
+    if(e.pointerType==='touch')return;
+    if(window.matchMedia('(pointer:fine)').matches){
+      const c=document.createElement('span');c.className='cursorRipple';
+      c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';document.body.appendChild(c);
+      setTimeout(()=>c.remove(),700);
+    }
+  },{passive:true});
+  window.addEventListener('resize',()=>{if(innerWidth>900)closeSidebar()});
+})();
+
+
+/* ===== HOME + LANGUAGE ACCESS FIX v7 ===== */
+(function(){
+  const $=id=>document.getElementById(id);
+
+  function showHome(){
+    if(typeof window.openHome==='function'){
+      try{ window.openHome(); return; }catch(e){}
+    }
+    const landing=$('landing'), app=$('app');
+    if(app) app.style.display='none';
+    if(landing) landing.style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function openLanguage(lang){
+    if(!window.LANGS || !window.LANGS[lang]) return;
+    // Home is the landing screen, so entering a language must explicitly
+    // switch from landing -> app before selecting the language.
+    if(typeof window.openApp==='function'){
+      try{ window.openApp('coding'); }catch(e){}
+    }else{
+      $('landing')?.style && ($('landing').style.display='none');
+      $('app')?.style && ($('app').style.display='block');
+    }
+    // selectLanguage is declared globally by the existing app.
+    if(typeof window.selectLanguage==='function'){
+      try{ window.selectLanguage(lang); }catch(e){}
+    }
+  }
+
+  function openTool(tool){
+    const map={
+      coding:'coding',
+      'coding lab':'coding',
+      web:'web',
+      'text → html':'web',
+      'text to html':'web',
+      projects:'projects'
+    };
+    const view=map[String(tool||'').toLowerCase().trim()];
+    if(!view) return;
+    if(typeof window.openApp==='function'){
+      try{ window.openApp(view); return; }catch(e){}
+    }
+  }
+
+  // IMPORTANT: Home sidebar button must call openHome(), not openApp('home').
+  const homeSide=$('homeSideBtn');
+  if(homeSide){
+    homeSide.onclick=function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      showHome();
+      document.querySelectorAll('.sideBtn').forEach(b=>b.classList.remove('active'));
+    };
+  }
+
+  // Home language launcher: open the application first, then select language.
+  document.querySelectorAll('#landing [data-home-lang]').forEach(btn=>{
+    btn.onclick=function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      openLanguage(btn.dataset.homeLang);
+    };
+  });
+
+  // Home's main tool buttons.
+  document.querySelectorAll('#landing [data-open]').forEach(btn=>{
+    btn.onclick=function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      openTool(btn.dataset.open);
+    };
+  });
+
+  // Make the landing page's language cards keyboard accessible as well.
+  document.querySelectorAll('#landing .homeLang').forEach(btn=>{
+    btn.setAttribute('role','button');
+    btn.setAttribute('tabindex','0');
+    btn.onkeydown=function(e){
+      if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();
+        openLanguage(btn.dataset.homeLang);
+      }
+    };
+  });
+})();
+
+
+
+/* ===== PROJECT TAB NEW PROJECT FLOW ===== */
+(function(){
+  const modal=$('projectModal');
+  const grid=$('projectLanguageGrid');
+  const openBtn=$('projectsNewProject');
+  const closeBtn=$('projectModalClose');
+  const backdrop=$('projectModalBackdrop');
+
+  function openProjectChooser(){
+    if(!modal)return;
+    grid.innerHTML='';
+    Object.entries(LANGS).filter(([key])=>key!=='css').forEach(([key,l])=>{
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='projectLanguageOption';
+      b.innerHTML=`<span class="plIcon">${l.icon}</span><span><strong>${l.name}</strong><span>Start a new ${l.name} project</span></span>`;
+      b.onclick=()=>createNewProject(key);
+      grid.appendChild(b);
+    });
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden','false');
+  }
+
+  function closeProjectChooser(){
+    modal?.classList.remove('show');
+    modal?.setAttribute('aria-hidden','true');
+  }
+
+  async function createNewProject(key){
+    const l=LANGS[key];
+    closeProjectChooser();
+
+    activeLanguage=key;
+    langLocal[key]=l.starter;
+    try{localStorage.setItem(langKey(key),l.starter)}catch(e){}
+
+    // Open Coding Lab with the selected language.
+    try{openApp('coding')}catch(e){}
+    try{selectLanguage(key)}catch(e){}
+
+    // Populate the compiler with the selected starter.
+    setTimeout(()=>{
+      try{populateEmbeddedCompiler(key)}catch(e){}
+    },500);
+
+    if($('langOutput'))$('langOutput').textContent=`New ${l.name} project ready.`;
+    if($('autoSaveStatus'))$('autoSaveStatus').textContent=currentUser?'New project · not saved':'Guest · local autosave';
+    toast(`New ${l.name} project created.`);
+  }
+
+  openBtn?.addEventListener('click',openProjectChooser);
+  closeBtn?.addEventListener('click',closeProjectChooser);
+  backdrop?.addEventListener('click',closeProjectChooser);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProjectChooser()});
+})();
+
+
+/* ===== CLOUD SAVE AS v15 ===== */
+(function(){
+  const extFor={python:'py',javascript:'js',cpp:'cpp',c:'c',java:'java',html:'html',css:'css',sql:'sql'};
+
+  function currentCode(){
+    const key=activeLanguage;
+    const local=loadLocalDraft(key);
+    const editor=$('langCode');
+    return (editor && editor.value.trim()) ? editor.value : (local || LANGS[key].starter);
+  }
+
+  async function cloudSaveAs(name){
+    if(!currentUser){
+      $('saveModalStatus').textContent='Please sign in with Google first.';
+      $('saveModalStatus').className='saveModalStatus error';
+      return false;
+    }
+    const key=activeLanguage, l=LANGS[key];
+    let clean=String(name||'').trim().replace(/[\\/:*?"<>|#%{}]/g,'-').replace(/\s+/g,'-');
+    if(!clean)return false;
+    const ext=extFor[key]||'txt';
+    if(!clean.toLowerCase().endsWith('.'+ext))clean+='.'+ext;
+    const code=currentCode();
+
+    try{
+      if(typeof window.__saveNamedCloudFile!=='function'){
+        throw new Error('Cloud save is still initializing. Please try again.');
+      }
+      await window.__saveNamedCloudFile(clean,code,key);
+      $('autoSaveStatus').textContent='Saved to cloud · '+clean;
+      $('saveModalStatus').textContent='Saved as '+clean;
+      $('saveModalStatus').className='saveModalStatus ok';
+      if(typeof renderProjects==='function')renderProjects();
+      toast('Saved "'+clean+'" to your Google account.');
+      return true;
+    }catch(e){
+      console.error(e);
+      $('saveModalStatus').textContent='Cloud save failed: '+(e?.message||'Firebase error');
+      $('saveModalStatus').className='saveModalStatus error';
+      return false;
+    }
+  }
+
+  function openSave(){
+    const modal=$('saveModal');
+    if(!modal)return;
+    const key=activeLanguage,l=LANGS[key],ext=extFor[key]||'txt';
+    const current=String(activeFile||'').replace(/\.[^.]+$/,'');
+    $('saveFileName').value=(current && current!=='main')?current:'my-'+l.name.toLowerCase().replace(/\s+/g,'-');
+    $('saveFileHint').textContent='File type: .'+ext;
+    $('saveModalStatus').textContent=currentUser?'Ready to save to your Google account.':'Sign in with Google to save to cloud.';
+    $('saveModalStatus').className='saveModalStatus';
+    modal.classList.add('show');modal.setAttribute('aria-hidden','false');
+    setTimeout(()=>{$('saveFileName').focus();$('saveFileName').select()},80);
+  }
+  function closeSave(){
+    $('saveModal')?.classList.remove('show');
+    $('saveModal')?.setAttribute('aria-hidden','true');
+  }
+
+  $('saveLangFile')?.addEventListener('click',openSave);
+  $('saveModalClose')?.addEventListener('click',closeSave);
+  $('saveCancel')?.addEventListener('click',closeSave);
+  $('saveModalBackdrop')?.addEventListener('click',closeSave);
+  $('saveConfirm')?.addEventListener('click',async()=>{
+    const name=$('saveFileName').value.trim();
+    if(!name){$('saveModalStatus').textContent='Enter a file name.';$('saveModalStatus').className='saveModalStatus error';return}
+    $('saveConfirm').disabled=true;$('saveConfirm').textContent='Saving…';
+    const ok=await cloudSaveAs(name);
+    $('saveConfirm').disabled=false;$('saveConfirm').textContent='☁ Save to Cloud';
+    if(ok)setTimeout(closeSave,500);
+  });
+  $('saveFileName')?.addEventListener('keydown',e=>{
+    if(e.key==='Enter')$('saveConfirm')?.click();
+    if(e.key==='Escape')closeSave();
+  });
+})();
+
+</script>
+</body>
+</html>
