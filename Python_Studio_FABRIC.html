@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Python Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090d16;
+    --surface: #111827;
+    --surface-elevated: #1f2937;
+    --border: #374151;
+    --text: #f9fafb;
+    --text-muted: #9ca3af;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --accent-glow: rgba(99, 102, 241, 0.25);
+    --success: #10b981;
+    --success-hover: #059669;
+    --danger: #f43f5e;
+    --radius-lg: 16px;
+    --radius-md: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg);
+    background-image: radial-gradient(at 0% 0%, rgba(99,99,241,.12) 0, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(16,185,129,.08) 0, transparent 50%);
+    background-attachment: fixed; color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh;
+    display: flex; justify-content: center; padding: 32px 16px 64px;
+  }
+  .wrap { width:100%; max-width:900px; display:flex; flex-direction:column; gap:16px; }
+  header,.controls-bar,#saveRow,.editor-container,.terminal-container {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+  }
+  header { display:flex; justify-content:space-between; align-items:center; padding:16px 24px; box-shadow:0 10px 30px -10px rgba(0,0,0,.5); }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .brand-icon { width:36px;height:36px;background:linear-gradient(135deg,#6366f1,#06b6d4);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 4px 12px rgba(99,102,241,.4); }
+  h1 { font-size:20px;font-weight:700;margin:0;letter-spacing:-.02em;background:linear-gradient(to right,#fff,#9ca3af);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+  .badge { display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);background:var(--surface-elevated);padding:4px 10px;border-radius:20px;border:1px solid var(--border); }
+  .status-dot { width:8px;height:8px;border-radius:50%;background:var(--text-muted); }
+  .status-dot.active { background:var(--success);box-shadow:0 0 8px var(--success); }
+  .status-dot.error { background:var(--danger);box-shadow:0 0 8px var(--danger); }
+  .controls-bar { display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px; }
+  .file-actions,.editor-actions { display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+  button,select,input { font-family:inherit;font-size:13px;font-weight:500;background:var(--surface-elevated);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-md);padding:8px 14px;outline:none;transition:.2s; }
+  button { cursor:pointer;display:inline-flex;align-items:center;gap:6px; }
+  button:hover:not(:disabled) { border-color:#4b5563;background:#283344; }
+  button:disabled { opacity:.4;cursor:not-allowed; }
+  button.primary { background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 10px var(--accent-glow); }
+  button.primary:hover:not(:disabled) { background:var(--accent-hover); }
+  button.success { background:var(--success);border-color:var(--success);color:#fff; }
+  button.success:hover:not(:disabled) { background:var(--success-hover); }
+  button.danger-btn { background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.3);color:var(--danger); }
+  button.danger-btn:hover:not(:disabled) { background:var(--danger);color:#fff; }
+  select { cursor:pointer;max-width:200px; }
+  select:focus,input:focus,textarea:focus { border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow); }
+  .workspace { display:flex;flex-direction:column;gap:16px; }
+  .editor-container,.terminal-container { overflow:hidden;box-shadow:0 8px 24px -6px rgba(0,0,0,.4); }
+  .editor-header,.terminal-header { display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--border);font-size:12px;color:var(--text-muted); }
+  textarea { width:100%;min-height:280px;font-family:'Fira Code',monospace;font-size:14px;line-height:1.6;padding:16px;border:none;background:transparent;color:#e5e7eb;resize:vertical;outline:none; }
+  #saveRow { display:none;gap:8px;padding:12px 16px;align-items:center;animation:fadeIn .2s ease; }
+  #saveName { flex:1; }
+  .terminal-header { font-weight:600;text-transform:uppercase;letter-spacing:.05em; }
+  pre#output { margin:0;min-height:130px;max-height:320px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-family:'Fira Code',monospace;font-size:13px;line-height:1.6;padding:16px;color:#a7f3d0; tab-size:4; }
+  .err,#diag { color:var(--danger); }
+  footer { text-align:center;font-size:12px;color:var(--text-muted);margin-top:8px; }
+  #diag { font-size:12px;white-space:pre-wrap; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)} }
+  @media (max-width:600px) {
+    body { padding:16px 10px 40px; }
+    header { padding:14px 16px; }
+    .controls-bar { align-items:stretch; }
+    .file-actions,.editor-actions { width:100%; }
+    button,select { flex:1; }
+    .badge { display:none; }
+  }
+
+  /* Dedicated welcome / login screen */
+  #authGate {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(99,102,241,.20), transparent 42%),
+      radial-gradient(circle at 90% 90%, rgba(16,185,129,.12), transparent 42%),
+      #090d16;
+  }
+  .auth-card {
+    width: min(450px, 100%);
+    padding: 34px 26px 28px;
+    text-align: center;
+    background: rgba(17,24,39,.97);
+    border: 1px solid #374151;
+    border-radius: 22px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.55);
+  }
+  .auth-logo {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    border-radius: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,#6366f1,#06b6d4);
+    color: #fff;
+    font-size: 29px;
+    font-weight: 700;
+    box-shadow: 0 8px 25px rgba(99,102,241,.35);
+  }
+  .auth-card h2 { margin:0 0 8px; font-size:27px; letter-spacing:-.02em; }
+  .auth-card p { margin:0 auto 24px; max-width:365px; color:#9ca3af; font-size:14px; line-height:1.65; }
+  .auth-actions { display:flex; flex-direction:column; gap:10px; }
+  .auth-actions button { width:100%; min-height:48px; justify-content:center; font-size:14px; }
+  #googleLoginBtn { background:#fff; color:#111827; border-color:#fff; }
+  #googleLoginBtn:hover:not(:disabled) { background:#f3f4f6; color:#111827; }
+  #guestLoginBtn { background:transparent; }
+  #loginError { min-height:18px; margin:12px 0 0; color:#f43f5e; font-size:12px; }
+  .auth-footnote { margin:16px 0 0 !important; font-size:11px !important; color:#6b7280 !important; }
+  #appShell.login-hidden { display:none; }
+  @media (max-width:600px) {
+    #authGate { padding:12px; }
+    .auth-card { padding:28px 20px 24px; }
+  }
+
+
+/* ===== Professional UI polish ===== */
+body{
+  background:
+    radial-gradient(700px 420px at 0% 0%,rgba(99,102,241,.18),transparent 62%),
+    radial-gradient(700px 420px at 100% 100%,rgba(6,182,212,.10),transparent 62%),
+    linear-gradient(180deg,#070b14,#0b1120);
+}
+.wrap{max-width:980px}
+header,.controls-bar,#saveRow,.editor-container,.terminal-container{
+  box-shadow:0 18px 50px rgba(0,0,0,.28);
+  backdrop-filter:blur(14px);
+}
+header{
+  padding:14px 18px;
+  border-color:rgba(148,163,184,.18);
+}
+.brand-icon{
+  width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(135deg,#6366f1,#06b6d4);
+  box-shadow:0 8px 22px rgba(99,102,241,.32);
+}
+.brand h1{font-size:20px}
+.controls-bar{padding:10px}
+button,select,input{
+  border-color:rgba(148,163,184,.18);
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,background .15s ease;
+}
+button:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:0 6px 18px rgba(0,0,0,.22);
+}
+button:active:not(:disabled){transform:translateY(1px) scale(.98)}
+.editor-container,.terminal-container{overflow:hidden}
+.editor-header,.terminal-header{
+  background:rgba(2,6,23,.35);
+}
+textarea{
+  background:rgba(2,6,23,.18);
+  tab-size:4;
+}
+pre#output{
+  background:rgba(2,6,23,.22);
+  min-height:150px;
+}
+#diag{padding:0 4px}
+
+/* Welcome screen */
+#authGate{
+  background:
+    radial-gradient(700px 500px at 15% 10%,rgba(99,102,241,.22),transparent 60%),
+    radial-gradient(600px 500px at 90% 90%,rgba(6,182,212,.13),transparent 60%),
+    #070b14;
+}
+.auth-card{
+  width:min(460px,100%);
+  padding:38px 30px 28px;
+  background:rgba(17,24,39,.88);
+  border:1px solid rgba(148,163,184,.18);
+  border-radius:24px;
+  box-shadow:0 28px 90px rgba(0,0,0,.52);
+  backdrop-filter:blur(18px);
+}
+.auth-logo{
+  width:72px;height:72px;border-radius:20px;
+  background:linear-gradient(135deg,#6366f1,#06b6d4);
+  box-shadow:0 12px 32px rgba(99,102,241,.34);
+}
+.auth-card h2{font-size:28px}
+.auth-card p{font-size:13px}
+.auth-actions button{min-height:50px;border-radius:12px}
+#googleLoginBtn{
+  background:#fff;color:#111827;border-color:#fff;
+}
+#googleLoginBtn:hover:not(:disabled){
+  background:#f8fafc;color:#111827;
+}
+.google-mark{
+  width:18px;height:18px;display:inline-block;flex:none;
+}
+@media (prefers-reduced-motion:reduce){
+  .pointer-ripple{animation:none;opacity:0}
+}
+
+
+/* ===== Interactive fabric surface ===== */
+#fabricLayer{
+  position:fixed;
+  inset:0;
+  z-index:99998;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:.9;
+}
+.fabric-wave{
+  position:absolute;
+  width:220px;
+  height:220px;
+  margin:-110px 0 0 -110px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(255,255,255,.055) 0 5%,
+      rgba(129,140,248,.045) 10%,
+      rgba(99,102,241,.025) 27%,
+      transparent 62%);
+  filter:blur(.2px);
+  transform:translate3d(0,0,0) scale(.35);
+  opacity:0;
+  will-change:transform,opacity;
+}
+@media (prefers-reduced-motion:reduce){
+  #fabricLayer{display:none}
+}
+
+</style>
+</head>
+<body>
+<div id="fabricLayer" aria-hidden="true"></div>
+
+<div id="authGate">
+  <div class="auth-card">
+    <div class="auth-logo">Py</div>
+    <h2>Welcome to Python Studio</h2>
+    <p>Learn Python by writing and running code in your browser. Sign in with Google to save your programs everywhere, or continue as a guest.</p>
+    <div class="auth-actions">
+      <button id="googleLoginBtn">
+      <svg class="google-mark" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#4285F4" d="M21.35 12.27c0-.73-.07-1.43-.2-2.1H12v3.98h5.24a4.48 4.48 0 0 1-1.94 2.94v2.44h3.14c1.84-1.69 2.91-4.18 2.91-7.26z"/>
+        <path fill="#34A853" d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.44c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.75z"/>
+        <path fill="#FBBC05" d="M6.54 13.85A5.86 5.86 0 0 1 6.23 12c0-.64.11-1.26.31-1.85V7.63H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.37l3.24-2.52z"/>
+        <path fill="#EA4335" d="M12 6.12c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.84 3.18 14.63 2.25 12 2.25A9.75 9.75 0 0 0 3.3 7.63l3.24 2.52C7.31 7.84 9.46 6.12 12 6.12z"/>
+      </svg>
+      Continue with Google
+    </button>
+      <button id="guestLoginBtn">Continue as Guest</button>
+    </div>
+    <div id="loginError"></div>
+    <p class="auth-footnote">Guest mode saves work only on this browser. Google sign-in enables cloud saving across devices.</p>
+  </div>
+</div>
+
+<div id="appShell" class="wrap login-hidden">
+  <header>
+    <div class="brand"><div class="brand-icon">Py</div><div><h1>Python Studio</h1><div class="brand-subtitle">Learn • Code • Run</div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+      <div class="badge"><span class="status-dot" id="statusDot"></span><span id="status">Loading runtime…</span></div>
+      <button id="authBtn" class="primary" style="white-space:nowrap;">Sign in with Google</button>
+    </div>
+  </header>
+
+  <div class="controls-bar">
+    <div class="file-actions">
+      <button id="newBtn">+ New File</button>
+      <select id="loadSelect"><option value="">Open Saved File…</option></select>
+      <button id="deleteBtn" class="danger-btn" disabled>Delete</button>
+    </div>
+    <div class="editor-actions">
+      <button id="saveBtn" class="success" disabled>Save File</button>
+      <button id="runBtn" class="primary" disabled>Run Code</button>
+    </div>
+  </div>
+
+  <div id="saveRow">
+    <input id="saveName" type="text" placeholder="Enter file name (e.g. main)" />
+    <button id="confirmSaveBtn" class="success">Confirm Save</button>
+    <button id="cancelSaveBtn">Cancel</button>
+  </div>
+
+  <div class="workspace">
+    <div class="editor-container">
+      <div class="editor-header">
+        <span id="currentFileName">Untitled (Unsaved Draft)</span>
+        <span>Python 3.11 (Pyodide)</span>
+      </div>
+      <textarea id="code" spellcheck="false" placeholder="Write your Python code here...">print("Hello, welcome to Python Studio!")
+for i in range(5):
+    print(f"Index: {i}")</textarea>
+    </div>
+
+    <div class="terminal-container">
+      <div class="terminal-header">
+        <span>Console Output</span>
+        <button id="clearBtn" style="padding:2px 8px;font-size:11px;">Clear Terminal</button>
+      </div>
+      <pre id="output"></pre>
+    </div>
+  </div>
+
+  <div id="diag"></div>
+  <footer>Browser-native Python execution. Sign in to save programs securely across devices.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"
+onerror="document.getElementById('diag').textContent='Could not load Pyodide runtime. Check your internet connection or script blockers.'"></script>
+<script>
+(function () {
+  const statusEl=document.getElementById('status'), statusDot=document.getElementById('statusDot');
+  const runBtn=document.getElementById('runBtn'), saveBtn=document.getElementById('saveBtn');
+  const newBtn=document.getElementById('newBtn'), deleteBtn=document.getElementById('deleteBtn');
+  const clearBtn=document.getElementById('clearBtn'), codeEl=document.getElementById('code');
+  const outputEl=document.getElementById('output'), loadSelect=document.getElementById('loadSelect');
+  const saveRow=document.getElementById('saveRow'), saveName=document.getElementById('saveName');
+  const confirmSaveBtn=document.getElementById('confirmSaveBtn'), cancelSaveBtn=document.getElementById('cancelSaveBtn');
+  const currentFileNameEl=document.getElementById('currentFileName'), diagEl=document.getElementById('diag');
+
+  const STORAGE_PREFIX='py_studio_file:', DRAFT_KEY='py_studio_current_draft', LAST_ACTIVE_FILE_KEY='py_studio_active_file';
+  let pyodide=null, activeFileKey=null;
+
+  function appendOutput(text,isError){
+    // Keep Python's output exactly as text, including every newline.
+    const span=document.createElement('span');
+    if(isError) span.className='err';
+    span.textContent=String(text).replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+    outputEl.appendChild(span);
+    outputEl.scrollTop=outputEl.scrollHeight;
+  }
+
+  async function boot(){
+    if(typeof loadPyodide==='undefined'){
+      statusEl.textContent='Failed to load'; statusDot.className='status-dot error';
+      diagEl.textContent='Pyodide CDN failed to load. Please verify your connection.';
+      return;
+    }
+    try{
+      pyodide=await loadPyodide();
+      // Use raw stdout/stderr so Python newlines are preserved exactly.
+      pyodide.setStdout({batched:s=>appendOutput(String(s)+'\n',false)});
+      pyodide.setStderr({batched:s=>appendOutput(String(s)+'\n',true)});
+      // Replace Python's input() with a browser prompt that does NOT echo
+      // the Python prompt text into the terminal. This keeps input("...")
+      // prompts out of the console while preserving normal print() output.
+      const browserInput = (promptText) => {
+        const value = window.prompt('Input');
+        const answer = value === null ? '' : value;
+        // Do not echo the entered value here. Python code such as print(x)
+        // should be responsible for displaying it, exactly once.
+        return answer;
+      };
+      pyodide.globals.set('browserInput', browserInput);
+      await pyodide.runPythonAsync(`
+import builtins
+builtins.input = browserInput
+`);
+      pyodide.setStdin({ stdin: () => '' });
+      statusEl.textContent='Ready'; statusDot.className='status-dot active';
+      runBtn.disabled=false; saveBtn.disabled=false;
+      refreshSavedList(); restoreSession();
+    }catch(e){
+      statusEl.textContent='Interpreter error'; statusDot.className='status-dot error';
+      diagEl.textContent='Could not start Python: '+e.message;
+    }
+  }
+
+  function restoreSession(){
+    const lastActive=localStorage.getItem(LAST_ACTIVE_FILE_KEY), lastDraft=localStorage.getItem(DRAFT_KEY);
+    if(lastActive && localStorage.getItem(lastActive)!==null) loadFile(lastActive);
+    else if(lastDraft!==null){ codeEl.value=lastDraft; updateHeaderDisplay(null); }
+  }
+
+  function updateHeaderDisplay(fileName){
+    if(fileName){ currentFileNameEl.textContent=`File: ${fileName}`; deleteBtn.disabled=false; }
+    else { currentFileNameEl.textContent='Untitled (Unsaved Draft)'; deleteBtn.disabled=true; }
+  }
+
+  codeEl.addEventListener('input',()=>localStorage.setItem(DRAFT_KEY,codeEl.value));
+
+  async function runCode(){
+    if(!pyodide)return;
+    runBtn.disabled=true; statusEl.textContent='Executing…'; outputEl.textContent='';
+    try{ await pyodide.runPythonAsync(codeEl.value); statusEl.textContent='Ready'; }
+    catch(e){ appendOutput(String(e.message||e)+'\n',true); statusEl.textContent='Execution error'; }
+    finally{ runBtn.disabled=false; }
+  }
+
+  function refreshSavedList(){
+    loadSelect.innerHTML='<option value="">Open Saved File…</option>';
+    for(let i=0;i<localStorage.length;i++){
+      const key=localStorage.key(i);
+      if(key&&key.startsWith(STORAGE_PREFIX)){
+        const name=key.slice(STORAGE_PREFIX.length), opt=document.createElement('option');
+        opt.value=key; opt.textContent=name; if(key===activeFileKey)opt.selected=true;
+        loadSelect.appendChild(opt);
+      }
+    }
+  }
+
+  function loadFile(key){
+    const value=localStorage.getItem(key);
+    if(value!==null){
+      codeEl.value=value; activeFileKey=key;
+      const fileName=key.slice(STORAGE_PREFIX.length);
+      updateHeaderDisplay(fileName);
+      localStorage.setItem(LAST_ACTIVE_FILE_KEY,key);
+      localStorage.setItem(DRAFT_KEY,value); refreshSavedList();
+    }
+  }
+
+  newBtn.addEventListener('click',()=>{
+    codeEl.value='print("New script")'; activeFileKey=null;
+    localStorage.removeItem(LAST_ACTIVE_FILE_KEY); localStorage.setItem(DRAFT_KEY,codeEl.value);
+    updateHeaderDisplay(null); loadSelect.value='';
+  });
+
+  deleteBtn.addEventListener('click',()=>{
+    if(!activeFileKey)return;
+    const fileName=activeFileKey.slice(STORAGE_PREFIX.length);
+    if(confirm(`Are you sure you want to delete "${fileName}"?`)){
+      localStorage.removeItem(activeFileKey); localStorage.removeItem(LAST_ACTIVE_FILE_KEY);
+      activeFileKey=null; codeEl.value=''; localStorage.setItem(DRAFT_KEY,'');
+      updateHeaderDisplay(null); refreshSavedList();
+    }
+  });
+
+  runBtn.addEventListener('click',runCode);
+  clearBtn.addEventListener('click',()=>outputEl.textContent='');
+
+  saveBtn.addEventListener('click',()=>{
+    saveRow.style.display='flex';
+    if(activeFileKey)saveName.value=activeFileKey.slice(STORAGE_PREFIX.length);
+    saveName.focus();
+  });
+
+  cancelSaveBtn.addEventListener('click',()=>{
+    saveRow.style.display='none'; saveName.value='';
+  });
+
+  confirmSaveBtn.addEventListener('click',()=>{
+    const name=saveName.value.trim();
+    if(!name){ appendOutput('Please specify a filename before saving.\n',true); return; }
+    try{
+      const targetKey=STORAGE_PREFIX+name;
+      localStorage.setItem(targetKey,codeEl.value); activeFileKey=targetKey;
+      localStorage.setItem(LAST_ACTIVE_FILE_KEY,activeFileKey);
+      saveRow.style.display='none'; saveName.value='';
+      updateHeaderDisplay(name); refreshSavedList();
+    }catch(e){ appendOutput('Could not save file: '+e.message+'\n',true); }
+  });
+
+  loadSelect.addEventListener('change',()=>{ const key=loadSelect.value; if(key)loadFile(key); });
+  boot();
+})();
+</script>
+
+
+<script>
+(function(){
+  let lastTouch=0;
+  function bend(x,y){
+    const el=document.createElement('span');
+    el.className='pointer-ripple';
+    el.style.left=x+'px';
+    el.style.top=y+'px';
+    document.body.appendChild(el);
+    el.addEventListener('animationend',()=>el.remove(),{once:true});
+  }
+  document.addEventListener('pointerdown',function(e){
+    if(e.pointerType==='touch') lastTouch=Date.now();
+    bend(e.clientX,e.clientY);
+  },{passive:true});
+  document.addEventListener('click',function(e){
+    if(Date.now()-lastTouch>500) bend(e.clientX,e.clientY);
+  },{passive:true});
+})();
+</script>
+
+
+<script>
+(function(){
+  const layer = document.getElementById('fabricLayer');
+  if (!layer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const waves = [];
+  const MAX_WAVES = 8;
+  let pointerX = innerWidth * .5;
+  let pointerY = innerHeight * .5;
+  let targetX = pointerX, targetY = pointerY;
+  let lastX = pointerX, lastY = pointerY;
+  let active = false;
+  let dragging = false;
+  let lastTime = performance.now();
+
+  function makeWave(x, y, strength){
+    const el = document.createElement('span');
+    el.className = 'fabric-wave';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    layer.appendChild(el);
+    const wave = {
+      el, x, y, strength: Math.min(1, strength),
+      age: 0, life: 720 + Math.random()*260,
+      driftX: (Math.random()-.5)*8,
+      driftY: (Math.random()-.5)*8
+    };
+    waves.push(wave);
+    while(waves.length > MAX_WAVES){
+      const old = waves.shift();
+      old.el.remove();
+    }
+  }
+
+  function pointerMove(x,y,pressed){
+    targetX=x; targetY=y;
+    const dx=x-lastX, dy=y-lastY;
+    const speed=Math.min(1, Math.hypot(dx,dy)/28);
+    if(pressed && speed>.03) makeWave(x,y,.35+speed*.65);
+    lastX=x; lastY=y;
+    active=true;
+  }
+
+  addEventListener('pointermove', e => {
+    pointerMove(e.clientX,e.clientY,dragging || e.pointerType==='mouse');
+  }, {passive:true});
+
+  addEventListener('pointerdown', e => {
+    dragging=true;
+    pointerMove(e.clientX,e.clientY,true);
+    makeWave(e.clientX,e.clientY,.9);
+  }, {passive:true});
+
+  addEventListener('pointerup', () => { dragging=false; }, {passive:true});
+  addEventListener('pointercancel', () => { dragging=false; }, {passive:true});
+  addEventListener('pointerleave', () => { active=false; dragging=false; }, {passive:true});
+
+  function animate(now){
+    const dt=Math.min(32, now-lastTime);
+    lastTime=now;
+
+    /* The pointer itself becomes a soft displacement center. */
+    pointerX += (targetX-pointerX) * .18;
+    pointerY += (targetY-pointerY) * .18;
+
+    if(active){
+      const speed=Math.hypot(targetX-lastX,targetY-lastY);
+      if(speed>.5 && dragging) makeWave(pointerX,pointerY,.25);
+    }
+
+    for(let i=waves.length-1;i>=0;i--){
+      const w=waves[i];
+      w.age += dt;
+      const t=w.age/w.life;
+      if(t>=1){
+        w.el.remove();
+        waves.splice(i,1);
+        continue;
+      }
+
+      /* Spring-like expansion and return to a flat surface. */
+      const rise = t < .22 ? t/.22 : 1-(t-.22)/.78;
+      const scale = .35 + Math.max(0,rise)*(.85+w.strength*.75);
+      const pull = Math.sin(t*Math.PI) * w.strength;
+      const x = w.x + w.driftX*t*18;
+      const y = w.y + w.driftY*t*18;
+      w.el.style.transform =
+        `translate3d(${(pointerX-x)*.035*pull}px,${(pointerY-y)*.035*pull}px,0) scale(${scale})`;
+      w.el.style.opacity = String(Math.max(0, .34 * (1-t) * (0.45+w.strength)));
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+})();
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup,
+    onAuthStateChanged, signOut, setPersistence, browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+  import {
+    getFirestore, collection, doc, setDoc, getDocs, deleteDoc
+  } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCB4j1ZHt0qlrdnQKCvw1thBzFTL9PTQRo",
+    authDomain: "python-studio-b1e38.firebaseapp.com",
+    projectId: "python-studio-b1e38",
+    storageBucket: "python-studio-b1e38.firebasestorage.app",
+    messagingSenderId: "579574340270",
+    appId: "1:579574340270:web:78f8dcea970246fac92b3f",
+    measurementId: "G-W491W9KKNH"
+  };
+
+  const authGate = document.getElementById('authGate');
+  const appShell = document.getElementById('appShell');
+  const googleLoginBtn = document.getElementById('googleLoginBtn');
+  const guestLoginBtn = document.getElementById('guestLoginBtn');
+  const loginError = document.getElementById('loginError');
+
+  const authBtn = document.getElementById('authBtn');
+  const loadSelect = document.getElementById('loadSelect');
+  const saveBtn = document.getElementById('saveBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  const saveRow = document.getElementById('saveRow');
+  const saveName = document.getElementById('saveName');
+  const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+  const cancelSaveBtn = document.getElementById('cancelSaveBtn');
+  const codeEl = document.getElementById('code');
+  const currentFileNameEl = document.getElementById('currentFileName');
+  const diagEl = document.getElementById('diag');
+
+  const STORAGE_PREFIX = 'py_studio_file:';
+  const DRAFT_KEY = 'py_studio_current_draft';
+  const LAST_ACTIVE_FILE_KEY = 'py_studio_active_file';
+
+  let currentUser = null;
+  let guestMode = false;
+  let cloudFiles = new Map();
+  let activeCloudFile = null;
+  let auth = null;
+  let db = null;
+  let provider = null;
+
+  function showCloudMessage(message, error=false) {
+    diagEl.textContent = message;
+    diagEl.style.color = error ? 'var(--danger)' : 'var(--text-muted)';
+  }
+
+  function showRunner() {
+    authGate.style.display = 'none';
+    appShell.classList.remove('login-hidden');
+  }
+
+  function showLogin() {
+    appShell.classList.add('login-hidden');
+    authGate.style.display = 'flex';
+  }
+
+  function setLoginError(message='') {
+    loginError.textContent = message;
+  }
+
+  function refreshGuestFiles() {
+    loadSelect.innerHTML = '<option value="">Open Saved File…</option>';
+    const keys = [];
+    for (let i=0; i<localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(STORAGE_PREFIX)) keys.push(key);
+    }
+    keys.sort((a,b) => a.localeCompare(b));
+    keys.forEach(key => {
+      const opt = document.createElement('option');
+      opt.value = 'local:' + key.slice(STORAGE_PREFIX.length);
+      opt.textContent = 'Local · ' + key.slice(STORAGE_PREFIX.length);
+      loadSelect.appendChild(opt);
+    });
+  }
+
+  function enterGuest() {
+    guestMode = true;
+    currentUser = null;
+    activeCloudFile = null;
+    showRunner();
+    authBtn.textContent = 'Sign in with Google';
+    authBtn.classList.add('primary');
+    authBtn.classList.remove('success');
+    saveBtn.textContent = 'Save File';
+    refreshGuestFiles();
+    const draft = localStorage.getItem(DRAFT_KEY);
+    if (draft !== null) codeEl.value = draft;
+    showCloudMessage('Guest mode. Your programs are saved only on this browser.');
+  }
+
+  function enterUser(user) {
+    guestMode = false;
+    currentUser = user;
+    activeCloudFile = null;
+    showRunner();
+    updateAccountUI();
+    loadCloudFiles();
+  }
+
+  function updateAccountUI() {
+    if (currentUser) {
+      const name = currentUser.displayName || currentUser.email || 'Google account';
+      authBtn.textContent = '☁ ' + name + ' · Sign out';
+      authBtn.classList.remove('primary');
+      authBtn.classList.add('success');
+      saveBtn.textContent = '☁ Save to Cloud';
+      showCloudMessage('Signed in. Your saved programs are available on any device.');
+    } else if (guestMode) {
+      authBtn.textContent = 'Sign in with Google';
+      authBtn.classList.add('primary');
+      authBtn.classList.remove('success');
+      saveBtn.textContent = 'Save File';
+    }
+  }
+
+  async function loadCloudFiles() {
+    if (!currentUser) return;
+    cloudFiles.clear();
+    loadSelect.innerHTML = '<option value="">Open Saved File…</option>';
+    try {
+      const snap = await getDocs(collection(db, 'users', currentUser.uid, 'files'));
+      snap.forEach(item => {
+        cloudFiles.set(item.id, item.data().code || '');
+        const opt = document.createElement('option');
+        opt.value = 'cloud:' + item.id;
+        opt.textContent = '☁ ' + item.id;
+        loadSelect.appendChild(opt);
+      });
+    } catch (e) {
+      showCloudMessage('Could not load cloud files: ' + (e?.message || 'Firebase error') + '. Check Firestore Rules for users/{userId}/files.', true);
+    }
+  }
+
+  async function googleLogin() {
+    setLoginError('');
+    googleLoginBtn.disabled = true;
+    googleLoginBtn.textContent = 'Opening Google…';
+
+    try {
+      // Keep the login on this browser so the account remains signed in.
+      await setPersistence(auth, browserLocalPersistence);
+
+      // Popup is used here because this site is hosted on GitHub Pages.
+      // Redirect-based Firebase auth can fail on non-Firebase hosts when
+      // browsers block third-party storage.
+      const result = await signInWithPopup(auth, provider);
+
+      if (result && result.user) {
+        setLoginError('');
+        enterUser(result.user);
+      }
+    } catch (e) {
+      console.error('Google sign-in error:', e);
+
+      let message = e?.message || 'Could not sign in with Google.';
+
+      if (e?.code === 'auth/popup-blocked') {
+        message = 'Google sign-in popup was blocked. Please allow popups for this site and try again.';
+      } else if (e?.code === 'auth/popup-closed-by-user') {
+        message = 'Google sign-in was cancelled. Please try again.';
+      } else if (e?.code === 'auth/unauthorized-domain') {
+        message = 'This website is not authorised in Firebase. Make sure xenogolt.github.io is in Authentication → Settings → Authorised domains.';
+      }
+
+      setLoginError(message);
+    } finally {
+      googleLoginBtn.disabled = false;
+      googleLoginBtn.textContent = '🌐 Continue with Google';
+    }
+  }
+
+  googleLoginBtn.addEventListener('click', googleLogin);
+  guestLoginBtn.addEventListener('click', enterGuest);
+
+  authBtn.addEventListener('click', async () => {
+    if (currentUser) {
+      try {
+        await signOut(auth);
+        currentUser = null;
+        activeCloudFile = null;
+        showLogin();
+      } catch (e) {
+        showCloudMessage('Sign-out error: ' + e.message, true);
+      }
+    } else {
+      googleLogin();
+    }
+  });
+
+  // Cloud-aware save button. Guest mode uses localStorage.
+  const saveButton = saveBtn.cloneNode(true);
+  saveBtn.replaceWith(saveButton);
+  const saveAction = document.getElementById('saveBtn');
+  // The first runtime script may still be loading when this module replaces the
+  // button. The clone therefore inherits the initial disabled=true state.
+  // Enable the actual button so signed-in users can open the save dialog.
+  saveAction.disabled = false;
+
+  saveAction.addEventListener('click', () => {
+    if (!currentUser && !guestMode) {
+      googleLogin();
+      return;
+    }
+    saveRow.style.display = 'flex';
+    saveName.value = currentUser ? (activeCloudFile || '') : '';
+    saveName.focus();
+  });
+
+  const confirmButton = confirmSaveBtn.cloneNode(true);
+  confirmSaveBtn.replaceWith(confirmButton);
+  const confirmAction = document.getElementById('confirmSaveBtn');
+
+  confirmAction.addEventListener('click', async () => {
+    const name = saveName.value.trim();
+    if (!name) {
+      showCloudMessage('Please enter a filename.', true);
+      return;
+    }
+    if (!/^[a-zA-Z0-9._-]+$/.test(name)) {
+      showCloudMessage('Use only letters, numbers, dots, hyphens or underscores in filenames.', true);
+      return;
+    }
+
+    try {
+      if (guestMode) {
+        localStorage.setItem(STORAGE_PREFIX + name, codeEl.value);
+        localStorage.setItem(DRAFT_KEY, codeEl.value);
+        localStorage.setItem(LAST_ACTIVE_FILE_KEY, STORAGE_PREFIX + name);
+        activeCloudFile = null;
+        saveRow.style.display = 'none';
+        saveName.value = '';
+        currentFileNameEl.textContent = 'File: ' + name + ' (Local)';
+        deleteBtn.disabled = false;
+        refreshGuestFiles();
+        showCloudMessage('Saved locally on this browser.');
+        return;
+      }
+
+      if (!currentUser) return;
+      await setDoc(doc(db, 'users', currentUser.uid, 'files', name), {
+        code: codeEl.value,
+        updatedAt: new Date().toISOString()
+      });
+      cloudFiles.set(name, codeEl.value);
+      activeCloudFile = name;
+      saveRow.style.display = 'none';
+      saveName.value = '';
+      currentFileNameEl.textContent = '☁ File: ' + name;
+      deleteBtn.disabled = false;
+      await loadCloudFiles();
+      showCloudMessage('Saved to your Google account.');
+    } catch (e) {
+      console.error('Cloud save error:', e);
+      // Keep the user's work safe locally even if Firestore rules/network are unavailable.
+      try {
+        localStorage.setItem(STORAGE_PREFIX + name, codeEl.value);
+        localStorage.setItem(DRAFT_KEY, codeEl.value);
+        localStorage.setItem(LAST_ACTIVE_FILE_KEY, STORAGE_PREFIX + name);
+      } catch (_) {}
+      showCloudMessage('Cloud save failed: ' + (e?.message || 'unknown Firebase error') + ' A local backup was saved in this browser. If you see permission-denied, update Firestore Rules for users/{userId}/files.', true);
+    }
+  });
+
+  const cancelButton = cancelSaveBtn.cloneNode(true);
+  cancelSaveBtn.replaceWith(cancelButton);
+  document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+    saveRow.style.display = 'none';
+    saveName.value = '';
+  });
+
+  const deleteButton = deleteBtn.cloneNode(true);
+  deleteBtn.replaceWith(deleteButton);
+  const deleteAction = document.getElementById('deleteBtn');
+
+  deleteAction.addEventListener('click', async () => {
+    if (guestMode) {
+      const name = currentFileNameEl.textContent.replace(/^File:\s*/, '').replace(/\s+\(Local\)$/, '');
+      if (!name || name === 'Untitled (Unsaved Draft)') return;
+      if (confirm(`Delete "${name}" from this browser?`)) {
+        localStorage.removeItem(STORAGE_PREFIX + name);
+        localStorage.removeItem(LAST_ACTIVE_FILE_KEY);
+        activeCloudFile = null;
+        codeEl.value = '';
+        localStorage.setItem(DRAFT_KEY, '');
+        currentFileNameEl.textContent = 'Untitled (Unsaved Draft)';
+        deleteAction.disabled = true;
+        refreshGuestFiles();
+        showCloudMessage('Local file deleted.');
+      }
+      return;
+    }
+
+    if (!currentUser || !activeCloudFile) return;
+    const name = activeCloudFile;
+    if (confirm(`Delete "${name}" from your account?`)) {
+      try {
+        await deleteDoc(doc(db, 'users', currentUser.uid, 'files', name));
+        cloudFiles.delete(name);
+        activeCloudFile = null;
+        codeEl.value = '';
+        currentFileNameEl.textContent = 'Untitled (Unsaved Draft)';
+        deleteAction.disabled = true;
+        await loadCloudFiles();
+        showCloudMessage('Cloud file deleted.');
+      } catch (e) {
+        showCloudMessage('Cloud delete blocked by Firestore rules. Publish the user-only Firestore rules, then try again.', true);
+      }
+    }
+  });
+
+  loadSelect.addEventListener('change', () => {
+    const value = loadSelect.value;
+    if (value.startsWith('local:') && guestMode) {
+      const name = value.slice(6);
+      const code = localStorage.getItem(STORAGE_PREFIX + name);
+      if (code !== null) {
+        codeEl.value = code;
+        localStorage.setItem(DRAFT_KEY, code);
+        localStorage.setItem(LAST_ACTIVE_FILE_KEY, STORAGE_PREFIX + name);
+        currentFileNameEl.textContent = 'File: ' + name + ' (Local)';
+        deleteAction.disabled = false;
+        showCloudMessage('Loaded from this browser.');
+      }
+    } else if (value.startsWith('cloud:') && currentUser) {
+      const name = value.slice(6);
+      if (cloudFiles.has(name)) {
+        codeEl.value = cloudFiles.get(name);
+        activeCloudFile = name;
+        currentFileNameEl.textContent = '☁ File: ' + name;
+        deleteAction.disabled = false;
+        localStorage.setItem(DRAFT_KEY, codeEl.value);
+        showCloudMessage('Loaded from your Google account.');
+      }
+    }
+  });
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    provider = new GoogleAuthProvider();
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        enterUser(user);
+      }
+    });
+  } catch (e) {
+    setLoginError('Firebase could not start: ' + e.message);
+    guestLoginBtn.disabled = false;
+  }
+</script>
+</body>
+</html>
